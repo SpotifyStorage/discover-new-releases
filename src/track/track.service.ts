@@ -44,7 +44,6 @@ export class TrackService {
         // probleme: pas tous les artistes sont ajoutés
         artist.uri = artist.uri.split(":")[2]
         const foundArtist = await this.findOneArtistByArtistUri(artist.uri)
-        console.log(foundArtist)
         if (foundArtist != null) {
             return
         }
@@ -91,7 +90,6 @@ export class TrackService {
             trackEntity.trackUri = track.uri.split(":")[2]
             return trackEntity
         })
-        console.log(tracks)
         albumEntity.albumUri = album.id
         albumEntity.name = album.name
         albumEntity.tracks = tracks

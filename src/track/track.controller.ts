@@ -14,15 +14,18 @@ export class TrackController {
     // addTrack() {
     //   return this.trackService.addTrack();
     // }
-
+    @ApiQuery({ name: 'playlist'})
     @Get('add/artist')
     async appendArtistsFromPlaylist(@Query('playlist') playlistUri) {
       // Top 50 Canada: 37i9dQZEVXbMDoHDwVN2tF
       // Top Songs of 2023 Canada: 37i9dQZF1DWZWgC55ErxgS
       // Assigne a une variable toutes les artites. Itere cette variable -> ajoue BD. Return variable initiale
+
       const artists = await this.spotifyService.getArtistsFromPlaylistTrackItems(playlistUri)
-      console.log('2222222222222222222222222')
-      for (var artist of artists) {
+      let artistsUri = artists.map(artist => artist.uri)
+      const uniqueArtists = artists.filter((artist, index) => artistsUri.indexOf(artist.uri) === index)
+
+      for (var artist of uniqueArtists) {
         this.trackService.addArtist(artist)
       }
       return artists
@@ -32,11 +35,10 @@ export class TrackController {
     @Get('add/album')
     async appendAlbumFromArtist(@Query('artist') artistUri) {
       const albums = await this.spotifyService.getAlbumsFromArtist(artistUri)
-      // console.log(albums)
       for (var album of albums) {
-        this.trackService.addAlbum(await album)
+        await this.trackService.addAlbum(await album)
       }
-      return albums
+      return await Promise.all(albums)
     }
 
     @Get()
@@ -46,15 +48,9 @@ export class TrackController {
     
     @ApiQuery({ name: 'artist'})
     @Get('get_artist')
-    findArtist(@Query('artist') artistUri) {
-      return this.trackService.findArtist(artistUri)
+    async findArtist(@Query('artist') artistUri) {
+      return await this.trackService.findArtist(artistUri)
     }
-
-
-
-
-
-
 
     @Get('test')
     test(@Query('album') albumUri) {

@@ -2,10 +2,9 @@ version: '3'
 
 services:
   database:
-    image: 'postgres:latest'
+    image: 'mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-20.04'
     ports:
-      - 5432:5432
+      - 1433:1433
     environment:
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=postgres
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password1!
