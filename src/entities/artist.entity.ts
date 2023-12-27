@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn, OneToMany } from
 import { TrackEntity } from './track.entity';
 import { AlbumEntity } from './album.entity';
 
-@Entity()
+@Entity({ name: 'artist' })
 export class ArtistEntity {
   @PrimaryColumn({name: "artist_uri"})
   artistUri: string;

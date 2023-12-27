@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ArtistEntity } from './artist.entity';
 import { TrackEntity } from './track.entity';
 
-@Entity()
+@Entity({ name: 'album' })
 export class AlbumEntity {
   @PrimaryColumn({name: "album_uri"})
   albumUri: string;
