@@ -20,7 +20,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: configService.get('DATABASE_NAME'),
         entities: [TrackEntity, ArtistEntity, AlbumEntity],
         synchronize: true,
-        // options: { encrypt: configService.get('DATABASE_ENCRYYPT') == 'true' ? true : false },
+        options: { encrypt: configService.get('DATABASE_ENCRYPT') === "true" ? true : false},
       }),
       inject: [ConfigService],
     }),
