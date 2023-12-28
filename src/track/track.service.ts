@@ -136,15 +136,35 @@ export class TrackService {
 
     async addPlaycount(playcountData: PlaycountDto[]) {
         let toReturn: Promise<PlaycountEntity>[] = []
+        console.log('cocombre')
 
         playcountData.forEach( async track => {
             const playcountEntity = new PlaycountEntity()
-            playcountEntity.uri = await this.findOneTrackByTrackUri(track.uri)
-            playcountEntity.playcount = track.playcount
+            playcountEntity.track = await this.findOneTrackByTrackUri(track.uri)
+            playcountEntity.playcount = track.playcount.toString()
             playcountEntity.date = track.date.toString()
+            console.log('patate')
             toReturn.push(this.playcountRepository.save(playcountEntity))
         })
         return toReturn
     }
-    
+
+    async addManyPlaycount(playcountsData: PlaycountDto[]) {
+        console.log(playcountsData)
+
+        await this.dataSource.createQueryBuilder()
+            .insert()
+            .into(PlaycountEntity)
+            .values(await Promise.all(playcountsData.map(async playcount => ({
+                track: await this.findOneTrackByTrackUri(playcount.uri),
+                playcount: playcount.playcount.toString(),
+                date: playcount.date.toString(),
+            }))))
+            .execute()
+        return this.playcountRepository.find({
+            where: {
+                track: In(playcountsData.map(track => track.uri))
+            }
+        })
+    }
 }

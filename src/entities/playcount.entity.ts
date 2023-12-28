@@ -6,12 +6,14 @@ export class PlaycountEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => TrackEntity, (track) => track.trackUri)
+    @ManyToOne(() => TrackEntity, (track) => track.trackUri, {
+        cascade: true
+    })
     //@Column()
-    uri: TrackEntity;
+    track: TrackEntity;
     
     @Column()
-    playcount: number;
+    playcount: string;
 
     @Column()
     date: string;

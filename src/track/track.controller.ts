@@ -49,6 +49,7 @@ export class TrackController {
     @Post('playcount')
     appendPlaycountToDatabase(@Body() playcountData: PlaycountDto[]) {
       console.log(playcountData)
+
       return this.trackService.addPlaycount(playcountData)
     }
 
