@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { SpotifyService } from 'src/spotify/spotify.service';
 import { ApiQuery } from '@nestjs/swagger';
@@ -10,7 +10,7 @@ export class TrackController {
         private readonly trackService: TrackService,
         private readonly spotifyService: SpotifyService
       ) {}
-
+    private readonly logger = new Logger(TrackController.name);
     @ApiQuery({ name: 'playlist'})
     @Get('add/artist')
     async appendArtistsFromPlaylist(@Query('playlist') playlistUri) {
@@ -48,13 +48,13 @@ export class TrackController {
 
     @Post('playcount')
     appendPlaycountToDatabase(@Body() playcountData: PlaycountDto[]) {
-      console.log(playcountData)
-
+      this.logger.verbose("Adding playcount to database")
       return this.trackService.addPlaycount(playcountData)
     }
 
     @Get('find_all_albums')
     findAllAlbums() {
+      this.logger.verbose("Finding all albums")
       return this.trackService.findAllAlbumsUri()
     }
     // @Post('add/track')
