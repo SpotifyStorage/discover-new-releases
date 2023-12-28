@@ -29,7 +29,16 @@ export class ArtistController {
     @Get('add')
     @ApiQuery({ name: 'playlist', required: false})
     @ApiQuery({ name: 'artist', required: false})
-    func2(@Query('artist') artistUri, @Query('playlist') playlistUri) {
+    appendArtists(@Query('artist') artistUri, @Query('playlist') playlistUri) {
+      if (artistUri) {
+        console.log('artist ok')
+      }
+      if (playlistUri) {
+        console.log('playlist ok')
+      }
+      if (!artistUri && !playlistUri) {
+        console.log('erreur')
+      }
       return
     }
 
