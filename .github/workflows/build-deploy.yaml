@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: binimo/spots-discover-new-releases:${{ GITHUB_RUN_NUMBER }}
+          tags: binimo/spots-discover-new-releases:${{ github.run.number }}
 
       - name: Log in to Azure
         uses: azure/login@v1
@@ -38,6 +38,6 @@ jobs:
           containerAppName: discover-new-releases
           resourceGroup: SpotifyStorage
           registryUrl: registry.hub.docker.com
-          imageToDeploy: binimo/spots-discover-new-releases:${{ GITHUB_RUN_NUMBER }}
+          imageToDeploy: binimo/spots-discover-new-releases:${{ github.run.number }}
           environmentVariables: "DATABASE_USERNAME=spotifystorage DATABASE_PASSWORD=secretref:databasepassword DATABASE_HOST=spotifystorage-server.database.windows.net DATABASE_NAME=spotifystorage DATABASE_PORT=1433 DATABASE_ENCRYPT=true SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}"
           targetPort: 3000
