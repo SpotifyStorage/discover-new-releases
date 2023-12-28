@@ -18,7 +18,7 @@ const config = {
     synchronize: false,
     migrationsRun: true,
     options: { 
-      encrypt: `${process.env.DATABASE_NAME}` === "true" ? true : false,
+      encrypt: `${process.env.DATABASE_ENCRYPT}` === "true" ? true : false,
     },
 }
 
