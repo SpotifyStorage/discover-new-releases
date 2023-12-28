@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AlbumEntity } from 'src/entities/album.entity';
 import { ArtistEntity } from 'src/entities/artist.entity';
@@ -24,9 +24,8 @@ export class TrackService {
         private playcountRepository: Repository<PlaycountEntity>,        
         private dataSource: DataSource,
         private readonly spotifyService: SpotifyService,
-        
       ) {}
-
+    private readonly logger = new Logger(TrackService.name);
     async addTrackWithoutAlbum(track: AlbumTrackItem) {
         const foundTrack = await this.findOneTrackByTrackUri(track.uri)
         if (foundTrack != null) {
@@ -136,12 +135,10 @@ export class TrackService {
 
     async addPlaycount(playcountData: PlaycountDto[]) {
         let toReturn: Promise<PlaycountEntity>[] = []
-        console.log('cocombre')
+        this.logger.verbose(`Adding playcount: ${playcountData.length}`)
 
         playcountData.forEach( async track => {
             const playcountEntity = new PlaycountEntity()
-            console.log("URI", track.uri)
-            console.log("Track", await this.findOneTrackByTrackUri(track.uri))
             playcountEntity.track = await this.findOneTrackByTrackUri(track.uri)
             playcountEntity.playcount = track.playcount.toString()
             playcountEntity.date = track.date.toString()
@@ -151,8 +148,7 @@ export class TrackService {
     }
 
     async addManyPlaycount(playcountsData: PlaycountDto[]) {
-        console.log(playcountsData)
-
+        this.logger.verbose(`Adding playcount: ${playcountsData.length}`)
         await this.dataSource.createQueryBuilder()
             .insert()
             .into(PlaycountEntity)
