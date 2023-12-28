@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Message } from '../interfaces/message.interface';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom, map, tap } from 'rxjs';
 import { ApiResponseT4ils } from '../interfaces/api-response-t4ils.interface';

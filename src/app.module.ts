@@ -27,6 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
     ConfigModule.forRoot({
+      envFilePath: ['.env', '.env-spotify'],
       isGlobal: true,
     }),
     TrackModule,
