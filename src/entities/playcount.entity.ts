@@ -9,7 +9,6 @@ export class PlaycountEntity {
     @ManyToOne(() => TrackEntity, (track) => track.trackUri, {
         cascade: true
     })
-    //@Column()
     track: TrackEntity;
     
     @Column()

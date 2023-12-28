@@ -39,7 +39,7 @@ export class TrackService {
     }
 
     async findOneTrackByTrackUri(trackUri: string): Promise<TrackEntity | null> {
-        return this.tracksRepository.findOneBy({ trackUri: trackUri });
+        return await this.tracksRepository.findOneBy({ trackUri: trackUri });
     }
 
     async findOneArtistByArtistUri(artistUri: string): Promise<ArtistEntity | null> {
@@ -140,10 +140,11 @@ export class TrackService {
 
         playcountData.forEach( async track => {
             const playcountEntity = new PlaycountEntity()
+            console.log("URI", track.uri)
+            console.log("Track", await this.findOneTrackByTrackUri(track.uri))
             playcountEntity.track = await this.findOneTrackByTrackUri(track.uri)
             playcountEntity.playcount = track.playcount.toString()
             playcountEntity.date = track.date.toString()
-            console.log('patate')
             toReturn.push(this.playcountRepository.save(playcountEntity))
         })
         return toReturn
