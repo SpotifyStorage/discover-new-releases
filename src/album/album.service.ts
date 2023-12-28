@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumEntity } from 'src/entities/album.entity';
@@ -16,13 +16,16 @@ export class AlbumService {
 
         private readonly artistService: ArtistService
     ) {}
-
+    
+    logger = new Logger(AlbumService.name)
 
     async findAllAlbumsUri() {
+        this.logger.verbose('Searching in the DB for all albums')
         return this.albumRepository.find({select: {albumUri: true}})
     }
 
     async addAlbum(album: Album) {
+        this.logger.verbose(`Adding the following album '${album.uri}' to DB`)
         const artist = await this.artistService.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])
         const albumEntity = new AlbumEntity()
         let tracks: TrackEntity[] = []

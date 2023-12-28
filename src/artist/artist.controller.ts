@@ -26,6 +26,13 @@ export class ArtistController {
       return await this.artistService.addManyArtists(uniqueArtists)
     }
 
+    @Get('add')
+    @ApiQuery({ name: 'playlist', required: false})
+    @ApiQuery({ name: 'artist', required: false})
+    func2(@Query('artist') artistUri, @Query('playlist') playlistUri) {
+      return
+    }
+
     @ApiQuery({ name: 'artist'})
     @Get('get_artist')
     async findArtist(@Query('artist') artistUri) {
