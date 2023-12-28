@@ -16,14 +16,19 @@ export class TrackService {
     constructor(
         @InjectRepository(TrackEntity)
         private tracksRepository: Repository<TrackEntity>,
+
         @InjectRepository(ArtistEntity)
         private artistRepository: Repository<ArtistEntity>,
+
         @InjectRepository(PlaycountEntity)
-        private playcountRepository: Repository<PlaycountEntity>,        
+        private playcountRepository: Repository<PlaycountEntity>,   
+
         private dataSource: DataSource,
         private readonly spotifyService: SpotifyService,
       ) {}
+
     private readonly logger = new Logger(TrackService.name);
+
     async addTrackWithoutAlbum(track: AlbumTrackItem) {
         const foundTrack = await this.findOneTrackByTrackUri(track.uri)
         if (foundTrack != null) {
@@ -36,27 +41,9 @@ export class TrackService {
     }
 
     async findOneTrackByTrackUri(trackUri: string): Promise<TrackEntity | null> {
+        this.logger.verbose(`Searching in the DB for the following track '${trackUri}'`)
         return await this.tracksRepository.findOneBy({ trackUri: trackUri });
     }
-
-
-
-
-
-    async findTrack(trackUri: string) {
-        return this.tracksRepository.findOne({
-            where: {
-                trackUri: trackUri,
-            },
-            // relations: {
-            //     artist: true
-            // }
-        })
-    }
-
-
-
-
 
     async addPlaycount(playcountData: PlaycountDto[]) {
         let toReturn: Promise<PlaycountEntity>[] = []
@@ -73,7 +60,7 @@ export class TrackService {
     }
 
     async addManyPlaycount(playcountsData: PlaycountDto[]) {
-        this.logger.verbose(`Adding playcount: ${playcountsData.length}`)
+        this.logger.verbose(`Adding playcount data for ${playcountsData.length} tracks`)
         await this.dataSource.createQueryBuilder()
             .insert()
             .into(PlaycountEntity)

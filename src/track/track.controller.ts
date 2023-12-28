@@ -8,27 +8,22 @@ import { PlaycountDto } from './dto/playcount.dto';
 @Controller('track')
 export class TrackController {
     constructor(
-        private readonly trackService: TrackService,
-        private readonly spotifyService: SpotifyService
-      ) {}
+      private readonly trackService: TrackService,
+      private readonly spotifyService: SpotifyService
+    ) {}
 
+    logger = new Logger(TrackController.name)
 
-
-    @Get()
-    findTrack(@Query('track') trackUri) {
-      return this.trackService.findTrack(trackUri)
-    }
-    
-
-
-    @ApiQuery({ name: 'track'})
-    @Get('get_track')
-    async findOneTrack(@Query('track') trackUri) {
+    @ApiQuery({ name: 'track_id'})
+    @Get('')
+    async findOneTrack(@Query('track_id') trackUri) {
+      this.logger.verbose('Find one track by ID controller called')
       return await this.trackService.findOneTrackByTrackUri(trackUri)
     }
 
     @Post('playcount')
     appendPlaycountToDatabase(@Body() playcountData: PlaycountDto[]) {
+      this.logger.verbose('Append to DB playcount data controller called')
       return this.trackService.addManyPlaycount(playcountData)
 
       //return this.trackService.addPlaycount(playcountData)
