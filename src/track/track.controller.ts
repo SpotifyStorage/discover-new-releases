@@ -11,25 +11,18 @@ export class TrackController {
         private readonly spotifyService: SpotifyService
       ) {}
 
-    // @Get('add')
-    // addTrack() {
-    //   return this.trackService.addTrack();
-    // }
     @ApiQuery({ name: 'playlist'})
     @Get('add/artist')
     async appendArtistsFromPlaylist(@Query('playlist') playlistUri) {
       // Top 50 Canada: 37i9dQZEVXbMDoHDwVN2tF
       // Top Songs of 2023 Canada: 37i9dQZF1DWZWgC55ErxgS
-      // Assigne a une variable toutes les artites. Itere cette variable -> ajoue BD. Return variable initiale
+      // Assigne a une variable toutes les artistes. Itere cette variable -> ajoue BD. Return variable initiale
 
       const artists = await this.spotifyService.getArtistsFromPlaylistTrackItems(playlistUri)
       let artistsUri = artists.map(artist => artist.uri)
       const uniqueArtists = artists.filter((artist, index) => artistsUri.indexOf(artist.uri) === index)
 
-      for (var artist of uniqueArtists) {
-        this.trackService.addArtist(artist)
-      }
-      return artists
+      return await this.trackService.addManyArtists(uniqueArtists)
     }
 
     @ApiQuery({ name: 'artist'})
