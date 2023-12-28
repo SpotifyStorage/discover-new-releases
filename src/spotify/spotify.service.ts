@@ -6,11 +6,15 @@ import { Token } from '../interfaces/spotify/token.interface';
 import { Playlist } from 'src/interfaces/spotify/playlist.interface';
 import { Album } from 'src/interfaces/spotify/album.interface';
 import { AlbumSimplified } from 'src/interfaces/spotify/album-simplified.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SpotifyService {
   
-  constructor(private readonly httpService: HttpService) {this.getValidToken()}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService
+  ) {this.getValidToken()}
 
   activeToken = {
     access_token: '',
@@ -18,20 +22,9 @@ export class SpotifyService {
     expires_in: new Date()
   };
 
-
-  // callApi() {
-  //   return lastValueFrom(
-  //     this.httpService.get<ApiResponseT4ils>('https://api.t4ils.dev/albumPlayCount?albumid=3A4zAmE5c4dUAAqEJz6hCH').pipe(
-  //       map(
-  //         axiosResponse => axiosResponse.data.data.discs[0].tracks[0].name
-  //       )
-  //     )
-  //   )
-  // }
-
   async getNewToken(): Promise<Token> {
-    const client_id = '6db598c962bd437ba611f1029b1c7815'
-    const client_secret = '54da6e2c8dc948208f6e8e01f3938209'
+    const client_id = this.configService.get<string>('SPOTIFY_CLIENT_ID');
+    const client_secret = this.configService.get<string>('SPOTIFY_CLIENT_SECRET')
 
     const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
@@ -150,24 +143,5 @@ export class SpotifyService {
       )
     )
   }
-
-  async getPlaycount(albumUri: string) {
-    const token = (await this.getValidToken()).access_token
-    const header = {'Authorization': `Bearer ${token}`};
-    //const callUrl = `https://api-partner.spotify.com/album/v1/album-app/album/spotify:album:${albumUri}/desktop?catalogue=free&locale=en`
-    const callUrl = `https://api-partner.spotify.com/pathfinder/v1/query?operationName=getAlbum&variables=%7B%22uri%22%3A+%22spotify%3Aalbum%3A3A4zAmE5c4dUAAqEJz6hCH%22%2C+%22locale%22%3A+%22%22%2C+%22offset%22%3A+0%2C+%22limit%22%3A+50%7D&extensions=%7B%22persistedQuery%22%3A+%7B%22version%22%3A+1%2C+%22sha256Hash%22%3A+%2246ae954ef2d2fe7732b4b2b40222157b2e18b7ea84f70591ceb164e4de1b5d5d3%22%7D%7D`
-
-
-    return lastValueFrom(
-      this.httpService
-      .get<{
-        items: AlbumSimplified[] //Ajouter AlbumSimplified
-      }>(callUrl, {headers: header})
-      .pipe(
-        map(
-          axiosResponse => axiosResponse.data
-        )
-      )
-    )
-  }
+  
 }

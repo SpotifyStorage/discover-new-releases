@@ -39,5 +39,5 @@ jobs:
           resourceGroup: SpotifyStorage
           registryUrl: registry.hub.docker.com
           imageToDeploy: binimo/spots-discover-new-releases:latest
-          environmentVariables: "DATABASE_USERNAME=spotifystorage DATABASE_PASSWORD=secretref:databasepassword DATABASE_HOST=spotifystorage-server.database.windows.net DATABASE_NAME=spotifystorage DATABASE_PORT=1433 DATABASE_ENCRYPT=true"
+          environmentVariables: "DATABASE_USERNAME=spotifystorage DATABASE_PASSWORD=secretref:databasepassword DATABASE_HOST=spotifystorage-server.database.windows.net DATABASE_NAME=spotifystorage DATABASE_PORT=1433 DATABASE_ENCRYPT=true SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}"
           targetPort: 3000
