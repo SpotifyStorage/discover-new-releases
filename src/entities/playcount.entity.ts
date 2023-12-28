@@ -1,12 +1,13 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TrackEntity } from "./track.entity";
 
-@Entity({ name: 'track_playcount' })
-export class TrackPlayCountEntity {
+@Entity({ name: 'playcount' })
+export class PlaycountEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @ManyToOne(() => TrackEntity, (track) => track.trackUri)
+    //@Column()
     uri: TrackEntity;
     
     @Column()
