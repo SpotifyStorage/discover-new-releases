@@ -1,4 +1,4 @@
-export interface ArtistSimplified {
+export class ArtistSimplified {
     name: string;
     uri: string;
     type: string;
@@ -6,4 +6,7 @@ export interface ArtistSimplified {
     external_urls: {
         spotify: string;
     };
+    get id(): string {
+        return this.uri.split(":")[2];
+    }
 }
