@@ -59,9 +59,9 @@ export class TrackController {
       return this.trackService.addPlaycount(playcountData)
     }
 
-    @Get('all_artists')
-    findAllArtists() {
-      return this.trackService.findAllArtistsUri()
+    @Get('find_all_albums')
+    findAllAlbums() {
+      return this.trackService.findAllAlbumsUri()
     }
     // @Post('add/track')
     // async appendTracksFromArtist(@Query('artist') artistUri) {

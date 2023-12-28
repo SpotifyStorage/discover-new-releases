@@ -81,8 +81,8 @@ export class TrackService {
         })
     }
 
-    async findAllArtistsUri() {
-        return this.artistRepository.find({select: {artistUri: true}})
+    async findAllAlbumsUri() {
+        return this.albumRepository.find({select: {albumUri: true}})
     }
 
     async addAlbum(album: Album) {
