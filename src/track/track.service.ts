@@ -7,6 +7,8 @@ import { Album, AlbumTrackItem } from 'src/interfaces/spotify/album.interface';
 import { Artist } from 'src/interfaces/spotify/artist.interface';
 import { SpotifyService } from 'src/spotify/spotify.service';
 import { Repository } from 'typeorm';
+import { PlaycountDto } from './dto/playcount.dto';
+import { PlaycountEntity } from 'src/entities/playcount.entity';
 
 @Injectable()
 export class TrackService {
@@ -17,6 +19,8 @@ export class TrackService {
         private artistRepository: Repository<ArtistEntity>,
         @InjectRepository(AlbumEntity)
         private albumRepository: Repository<AlbumEntity>,
+        @InjectRepository(PlaycountEntity)
+        private playcountRepository: Repository<PlaycountEntity>,        
 
         private readonly spotifyService: SpotifyService,
       ) {}
@@ -95,6 +99,19 @@ export class TrackService {
         albumEntity.tracks = tracks
         albumEntity.artist = artist
         return this.albumRepository.save(albumEntity)
+    }
+
+    async addPlaycount(playcountData: PlaycountDto[]) {
+        let toReturn: Promise<PlaycountEntity>[] = []
+
+        playcountData.forEach( async track => {
+            const playcountEntity = new PlaycountEntity()
+            playcountEntity.uri = await this.findOneTrackByTrackUri(track.uri)
+            playcountEntity.playcount = track.playcount
+            playcountEntity.date = track.date.toString()
+            toReturn.push(this.playcountRepository.save(playcountEntity))
+        })
+        return toReturn
     }
 
 }

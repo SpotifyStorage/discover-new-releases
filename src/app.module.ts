@@ -6,6 +6,7 @@ import { TrackModule } from './track/track.module';
 import { ArtistEntity } from './entities/artist.entity';
 import { AlbumEntity } from './entities/album.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PlaycountEntity } from './entities/playcount.entity';
 
 @Module({
   imports: [HttpModule,
@@ -18,7 +19,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('DATABASE_USERNAME'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [TrackEntity, ArtistEntity, AlbumEntity],
+        entities: [TrackEntity, ArtistEntity, AlbumEntity, PlaycountEntity],
         synchronize: true,
         options: { 
           encrypt: configService.get('DATABASE_ENCRYPT') === "true" ? true : false,
