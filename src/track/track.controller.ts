@@ -46,10 +46,18 @@ export class TrackController {
       return await this.trackService.findOneArtist(artistUri)
     }
 
+    @ApiQuery({ name: 'track'})
+    @Get('get_track')
+    async findOneTrack(@Query('track') trackUri) {
+      return await this.trackService.findOneTrackByTrackUri(trackUri)
+    }
+
     @Post('playcount')
     appendPlaycountToDatabase(@Body() playcountData: PlaycountDto[]) {
       this.logger.verbose("Adding playcount to database")
-      return this.trackService.addPlaycount(playcountData)
+      return this.trackService.addManyPlaycount(playcountData)
+
+      //return this.trackService.addPlaycount(playcountData)
     }
 
     @Get('find_all_albums')
