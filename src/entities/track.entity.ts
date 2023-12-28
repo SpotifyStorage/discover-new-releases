@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany } from 'typeorm';
 import { AlbumEntity } from './album.entity';
+import { PlaycountEntity } from './playcount.entity';
 
 @Entity({ name: 'track' })
 export class TrackEntity {
@@ -16,4 +17,7 @@ export class TrackEntity {
 
   @ManyToOne(() => AlbumEntity, (album) => album.tracks)
   album: AlbumEntity
+
+  @OneToMany(() => PlaycountEntity, (playcount) => playcount.playcount)
+  playcounts: PlaycountEntity
 }

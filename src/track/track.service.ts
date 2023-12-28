@@ -68,7 +68,7 @@ export class TrackService {
         })
     }
 
-    async findArtist(artistUri: string) {
+    async findOneArtist(artistUri: string) {
         return this.artistRepository.findOne({
             where: {
                 artistUri: artistUri
@@ -79,6 +79,10 @@ export class TrackService {
                 }
             }
         })
+    }
+
+    async findAllArtistsUri() {
+        return this.artistRepository.find({select: {artistUri: true}})
     }
 
     async addAlbum(album: Album) {
@@ -113,5 +117,5 @@ export class TrackService {
         })
         return toReturn
     }
-
+    
 }
