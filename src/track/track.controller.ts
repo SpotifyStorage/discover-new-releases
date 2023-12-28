@@ -23,7 +23,7 @@ export class TrackController {
 
     @Post('playcount')
     appendPlaycountToDatabase(@Body() playcountData: PlaycountDto[]) {
-      this.logger.verbose('Append to DB playcount data controller called')
+      this.logger.verbose(`Add playcount to database controller called: ${playcountData.length}`)
       return this.trackService.addManyPlaycount(playcountData)
 
       //return this.trackService.addPlaycount(playcountData)

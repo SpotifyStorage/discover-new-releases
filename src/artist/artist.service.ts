@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistEntity } from 'src/entities/artist.entity';
 import { Artist } from 'src/interfaces/spotify/artist.interface';
@@ -11,16 +11,15 @@ export class ArtistService {
         @InjectRepository(ArtistEntity)
         private artistRepository: Repository<ArtistEntity>, 
         private dataSource: DataSource,
-        //private readonly spotifyService: SpotifyService,
-        
-      ) {}
+    ) {}
+    logger = new Logger(ArtistService.name);
 
     async findOneArtistByArtistUri(artistUri: string): Promise<ArtistEntity | null> {
         return this.artistRepository.findOneBy({ artistUri: artistUri });
     }
 
     async addManyArtists(artists: Artist[]) {
-        console.log(artists)
+        this.logger.verbose(`Adding ${artists.length} artists`)
         let uniqueArtist = artists
         const existingArtists = await this.artistRepository.find({
             where: {
