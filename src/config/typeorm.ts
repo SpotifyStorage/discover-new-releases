@@ -3,7 +3,7 @@ import { config as dotenvConfig } from 'dotenv';
 import { join } from "path";
 import { DataSource, DataSourceOptions } from "typeorm";
 
-dotenvConfig({ path: '.env' });
+dotenvConfig({ path: '.env'});
 
 const config = {
     type: 'mssql',
@@ -21,6 +21,6 @@ const config = {
       encrypt: `${process.env.DATABASE_ENCRYPT}` === "true" ? true : false,
     },
 }
-
+console.log(`DATABASE_NAME: ${process.env.DATABASE_NAME}`)
 export default registerAs('typeorm', () => config)
 export const connectionSource = new DataSource(config as DataSourceOptions);
