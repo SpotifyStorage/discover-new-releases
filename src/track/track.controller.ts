@@ -52,12 +52,6 @@ export class TrackController {
       return await this.trackService.findArtist(artistUri)
     }
 
-    @Get('test')
-    test(@Query('album') albumUri) {
-      return this.spotifyService.getPlaycount(albumUri)
-    }
-    
-
     // @Post('add/track')
     // async appendTracksFromArtist(@Query('artist') artistUri) {
     //   const tracks = await this.spotifyService.getTrackFromArtist(artistUri)
