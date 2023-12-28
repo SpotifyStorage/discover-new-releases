@@ -3,6 +3,9 @@ import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TrackModule } from './track/track.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AlbumModule } from './album/album.module';
+import { ArtistModule } from './artist/artist.module';
+import { SpotifyModule } from './spotify/spotify.module';
 import typeorm from './config/typeorm';
 
 @Module({
@@ -19,6 +22,9 @@ import typeorm from './config/typeorm';
       inject: [ConfigService],
     }),
     TrackModule,
+    AlbumModule,
+    ArtistModule,
+    SpotifyModule,
   ],
 })
 export class AppModule {}
