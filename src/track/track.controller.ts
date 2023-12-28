@@ -50,12 +50,18 @@ export class TrackController {
     @ApiQuery({ name: 'artist'})
     @Get('get_artist')
     async findArtist(@Query('artist') artistUri) {
-      return await this.trackService.findArtist(artistUri)
+      return await this.trackService.findOneArtist(artistUri)
     }
 
     @Post('playcount')
     appendPlaycountToDatabase(@Body() playcountData: PlaycountDto[]) {
+      console.log(playcountData)
       return this.trackService.addPlaycount(playcountData)
+    }
+
+    @Get('all_artists')
+    findAllArtists() {
+      return this.trackService.findAllArtistsUri()
     }
     // @Post('add/track')
     // async appendTracksFromArtist(@Query('artist') artistUri) {
