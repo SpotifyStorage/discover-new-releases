@@ -15,6 +15,7 @@ import { PlaycountEntity } from 'src/entities/playcount.entity';
         TypeOrmModule.forFeature([TrackEntity, ArtistEntity, AlbumEntity, PlaycountEntity])
     ],
     controllers: [TrackController],
-    providers: [TrackService, SpotifyService]
+    providers: [TrackService, SpotifyService],
+    exports: [TrackService]
 })
 export class TrackModule {}

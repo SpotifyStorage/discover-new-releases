@@ -18,8 +18,6 @@ export class TrackService {
         private tracksRepository: Repository<TrackEntity>,
         @InjectRepository(ArtistEntity)
         private artistRepository: Repository<ArtistEntity>,
-        @InjectRepository(AlbumEntity)
-        private albumRepository: Repository<AlbumEntity>,
         @InjectRepository(PlaycountEntity)
         private playcountRepository: Repository<PlaycountEntity>,        
         private dataSource: DataSource,
@@ -42,49 +40,9 @@ export class TrackService {
         return await this.tracksRepository.findOneBy({ trackUri: trackUri });
     }
 
-    async findOneArtistByArtistUri(artistUri: string): Promise<ArtistEntity | null> {
-        return this.artistRepository.findOneBy({ artistUri: artistUri });
-    }
 
-    async addManyArtists(artists: Artist[]) {
-        console.log(artists)
-        let uniqueArtist = artists
-        const existingArtists = await this.artistRepository.find({
-            where: {
-                artistUri: In(artists.map(artist => artist.id))
-            }
-        })
-        if (existingArtists.length > 0) {
-            uniqueArtist = artists.filter(artist => 
-                (existingArtists.find(existingArtist => existingArtist.artistUri == artist.id)) == null
-            )
-        }
-        await this.dataSource.createQueryBuilder()
-            .insert()
-            .into(ArtistEntity)
-            .values(uniqueArtist.map(artist => {
-                return artistToEntity(artist)
-            }))
-            .execute()
-        return this.artistRepository.find({
-            where: {
-                artistUri: In(artists.map(artist => artist.id))
-            }
-        })
-    }
 
-    async addArtist(artist: Artist) {
-        // probleme: pas tous les artistes sont ajoutés
-        artist.uri = artist.id
-        const foundArtist = await this.findOneArtistByArtistUri(artist.uri)
-        if (foundArtist != null) {
-            return
-        }
-        const artistEntity = new ArtistEntity()
-        artistEntity.artistUri = artist.uri
-        artistEntity.name = artist.name
-        this.artistRepository.save(artistEntity)
-    }
+
 
     async findTrack(trackUri: string) {
         return this.tracksRepository.findOne({
@@ -97,42 +55,9 @@ export class TrackService {
         })
     }
 
-    async findOneArtist(artistUri: string) {
-        return this.artistRepository.findOne({
-            where: {
-                artistUri: artistUri
-            },
-            relations: {
-                albums: {
-                    tracks: true
-                }
-            }
-        })
-    }
 
-    async findAllAlbumsUri() {
-        return this.albumRepository.find({select: {albumUri: true}})
-    }
 
-    async addAlbum(album: Album) {
-        const artist = await this.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])
-        const albumEntity = new AlbumEntity()
-        let tracks: TrackEntity[] = []
-        // album.tracks.items.forEach(async track => {
-        //     tracks.push(await this.addTrackWithoutAlbum(track))
-        // });
-        tracks = album.tracks.items.map((track) => {
-            const trackEntity = new TrackEntity()
-            trackEntity.name = track.name
-            trackEntity.trackUri = track.uri.split(":")[2]
-            return trackEntity
-        })
-        albumEntity.albumUri = album.id
-        albumEntity.name = album.name
-        albumEntity.tracks = tracks
-        albumEntity.artist = artist
-        return this.albumRepository.save(albumEntity)
-    }
+
 
     async addPlaycount(playcountData: PlaycountDto[]) {
         let toReturn: Promise<PlaycountEntity>[] = []

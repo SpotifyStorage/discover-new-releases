@@ -1,0 +1,35 @@
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { SpotifyService } from 'src/spotify/spotify.service';
+import { ArtistService } from './artist.service';
+
+@ApiTags('Artist')
+@Controller('artist')
+export class ArtistController {
+    
+    constructor(
+        private readonly artistService: ArtistService,
+        private readonly spotifyService: SpotifyService
+      ) {}
+
+    @ApiQuery({ name: 'playlist'})
+    @Get('add/artist')
+    async appendArtistsFromPlaylist(@Query('playlist') playlistUri) {
+      // Top 50 Canada: 37i9dQZEVXbMDoHDwVN2tF
+      // Top Songs of 2023 Canada: 37i9dQZF1DWZWgC55ErxgS
+      // Assigne a une variable toutes les artistes. Itere cette variable -> ajoue BD. Return variable initiale
+
+      const artists = await this.spotifyService.getArtistsFromPlaylistTrackItems(playlistUri)
+      let artistsUri = artists.map(artist => artist.uri)
+      const uniqueArtists = artists.filter((artist, index) => artistsUri.indexOf(artist.uri) === index)
+
+      return await this.artistService.addManyArtists(uniqueArtists)
+    }
+
+    @ApiQuery({ name: 'artist'})
+    @Get('get_artist')
+    async findArtist(@Query('artist') artistUri) {
+      return await this.artistService.findOneArtist(artistUri)
+    }
+
+}
