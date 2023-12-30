@@ -24,7 +24,6 @@ export class TrackService {
         private playcountRepository: Repository<PlaycountEntity>,   
 
         private dataSource: DataSource,
-        private readonly spotifyService: SpotifyService,
       ) {}
 
     private readonly logger = new Logger(TrackService.name);
