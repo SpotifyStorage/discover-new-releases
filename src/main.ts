@@ -8,9 +8,11 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-  .setTitle('Cats example')
-  .setDescription('The cats API description')
+  .setTitle('Spotify API')
+  .setDescription('A personal API collecting playcount and popularity data of many artists from Spotify')
   .setVersion('1.0')
+  .setContact('Mathieu Ducharme', 'https://github.com/SmoMeat', 'mathieuducharme86@gmail.com')
+  .setContact('Christophe Simard', 'https://github.com/Binimow', 'cricorafi@gmail.com')
   .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

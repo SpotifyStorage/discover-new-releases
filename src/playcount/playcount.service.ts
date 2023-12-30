@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlaycountEntity } from 'src/entities/playcount.entity';
 import { TrackService } from 'src/track/track.service';
-import { Between, Repository } from 'typeorm';
+import { Between, DataSource, In, Repository } from 'typeorm';
 import { PlaycountDto } from './dto/playcount.dto';
 import { ResponseDto } from 'src/interfaces/dto/response.dto';
 
@@ -15,7 +15,8 @@ export class PlaycountService {
         @InjectRepository(PlaycountEntity)
         private playcountRepository: Repository<PlaycountEntity>,
 
-        private readonly trackService: TrackService
+        private readonly trackService: TrackService,
+        private dataSource: DataSource
     ) {}
 
     async findPlaycountsByTrackUri(trackUri: string): Promise<ResponseDto<PlaycountDto[]>> {
@@ -38,6 +39,7 @@ export class PlaycountService {
         }
 
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
+        
         return {
             status: 'failed'
         }
@@ -64,12 +66,13 @@ export class PlaycountService {
         }
 
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
+        
         return {
             status: 'failed'
         }
     }
 
-    async findOnePlaycountByDateAndTrackUri(trackUri: string, date: string): Promise<ResponseDto<PlaycountDto>> {
+    async findOnePlaycountByDateAndTrackUri(trackUri: string, date: string | number): Promise<ResponseDto<PlaycountDto>> {
         
         const trackObject = await this.trackService.findOneTrackByTrackUri(trackUri);
         const dateBeginning = new Date(date)
@@ -92,6 +95,7 @@ export class PlaycountService {
         }
 
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
+        
         return {
             status: 'failed'
         }
@@ -101,7 +105,7 @@ export class PlaycountService {
         
         const trackObject = await this.trackService.findOneTrackByTrackUri(trackUri);
         const dateBeginning = new Date(date.start)
-        const dateEnd = new Date(date.end)
+        const dateEnd = new Date(new Date(date.end).getTime() + 86399999)
 
         if (trackObject) {
             this.logger.verbose(`Searching playcount in the DB for the following track '${trackUri}' between ${date.start} and ${date.end}`)
@@ -120,9 +124,43 @@ export class PlaycountService {
         }
         
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
+        
         return {
             status: 'failed',
             data: 'Invalid query parameters or track is not yet registered in our database.'
         }
+    }
+
+    async addOnePlaycount(playcount: PlaycountDto): Promise<ResponseDto<PlaycountDto>> {
+
+        this.logger.verbose(`Adding playcount data for the following track ${playcount.uri}`)
+
+        const playcountEntity = new PlaycountEntity()
+        playcountEntity.track = await this.trackService.findOneTrackByTrackUri(playcount.uri)
+        playcountEntity.playcount = playcount.playcount
+        playcountEntity.date = playcount.date
+        this.playcountRepository.save(playcountEntity)
+
+        return this.findOnePlaycountByDateAndTrackUri(playcount.uri, playcount.date)
+    }
+
+    async addManyPlaycounts(playcountsData: PlaycountDto[]) {
+
+        this.logger.verbose(`Adding playcount data for ${playcountsData.length} tracks`)
+
+        await this.dataSource.createQueryBuilder()
+            .insert()
+            .into(PlaycountEntity)
+            .values(await Promise.all(playcountsData.map(async playcount => ({
+                track: await this.trackService.findOneTrackByTrackUri(playcount.uri),
+                playcount: playcount.playcount,
+                date: playcount.date,
+            }))))
+            .execute()
+        return this.playcountRepository.find({
+            where: {
+                track: In(playcountsData.map(track => track.uri))
+            }
+        })
     }
 }

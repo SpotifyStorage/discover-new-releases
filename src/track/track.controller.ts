@@ -1,8 +1,6 @@
-import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
+import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { SpotifyService } from 'src/spotify/spotify.service';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { PlaycountDto } from './dto/playcount.dto';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Track')
 @Controller('track')
@@ -20,14 +18,7 @@ export class TrackController {
       return await this.trackService.findOneTrackByTrackUri(trackUri)
     }
 
-    @ApiBody({ type: [PlaycountDto] })
-    @Post('playcount')
-    appendPlaycountToDatabase(@Body() playcounts: PlaycountDto[]) {
-      this.logger.verbose(`Add playcount to database controller called: ${playcounts.length}`)
-      return this.trackService.addManyPlaycount(playcounts)
 
-      //return this.trackService.addPlaycount(playcountData)
-    }
 
     // @Post('add/track')
     // async appendTracksFromArtist(@Query('artist') artistUri) {
