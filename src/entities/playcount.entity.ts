@@ -11,9 +11,9 @@ export class PlaycountEntity {
     })
     track: TrackEntity;
     
-    @Column()
-    playcount: string;
+    @Column({ type: 'bigint' })
+    playcount: number;
 
-    @Column()
-    date: string;
+    @Column({ type: 'bigint' })
+    date: number;
 }

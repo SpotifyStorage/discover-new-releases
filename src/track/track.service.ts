@@ -1,24 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AlbumEntity } from 'src/entities/album.entity';
-import { ArtistEntity } from 'src/entities/artist.entity';
 import { TrackEntity } from 'src/entities/track.entity';
-import { Album, AlbumTrackItem } from 'src/interfaces/spotify/album.interface';
-import { Artist } from 'src/interfaces/spotify/artist.interface';
-import { SpotifyService } from 'src/spotify/spotify.service';
+import { AlbumTrackItem } from 'src/interfaces/spotify/album.interface';
 import { DataSource, In, Repository } from 'typeorm';
 import { PlaycountDto } from './dto/playcount.dto';
 import { PlaycountEntity } from 'src/entities/playcount.entity';
-import { artistToEntity } from 'src/utilities/artist.utilities';
 
 @Injectable()
 export class TrackService {
     constructor(
         @InjectRepository(TrackEntity)
         private tracksRepository: Repository<TrackEntity>,
-
-        @InjectRepository(ArtistEntity)
-        private artistRepository: Repository<ArtistEntity>,
 
         @InjectRepository(PlaycountEntity)
         private playcountRepository: Repository<PlaycountEntity>,   
@@ -51,8 +43,8 @@ export class TrackService {
         playcountData.forEach( async track => {
             const playcountEntity = new PlaycountEntity()
             playcountEntity.track = await this.findOneTrackByTrackUri(track.uri)
-            playcountEntity.playcount = track.playcount.toString()
-            playcountEntity.date = track.date.toString()
+            playcountEntity.playcount = track.playcount
+            playcountEntity.date = track.date
             toReturn.push(this.playcountRepository.save(playcountEntity))
         })
         return toReturn
@@ -65,8 +57,8 @@ export class TrackService {
             .into(PlaycountEntity)
             .values(await Promise.all(playcountsData.map(async playcount => ({
                 track: await this.findOneTrackByTrackUri(playcount.uri),
-                playcount: playcount.playcount.toString(),
-                date: playcount.date.toString(),
+                playcount: playcount.playcount,
+                date: playcount.date,
             }))))
             .execute()
         return this.playcountRepository.find({

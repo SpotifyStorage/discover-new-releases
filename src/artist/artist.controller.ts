@@ -33,10 +33,10 @@ export class ArtistController {
   appendArtists(@Query('artist') artistUri, @Query('playlist') playlistUri) {
     this.logger.verbose('Add all albums by artist controller called');
     if (artistUri) {
-      console.log('artist ok')
+      console.log(artistUri)
     }
     if (playlistUri) {
-      console.log('playlist ok')
+      console.log(playlistUri)
     }
     if (!artistUri && !playlistUri) {
       console.log('erreur')
