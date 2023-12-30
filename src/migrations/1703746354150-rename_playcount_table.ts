@@ -6,7 +6,7 @@ export class RenamePlaycountTable1703746354150 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "playcount" ("id" int NOT NULL IDENTITY(1,1), "playcount" int NOT NULL, "date" nvarchar(255) NOT NULL, "uriTrackUri" nvarchar(255), CONSTRAINT "PK_6447c8c4e19230a4a835cb8096f" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "playcount" ADD CONSTRAINT "FK_3d616c41f9591588de14aaee703" FOREIGN KEY ("uriTrackUri") REFERENCES "track"("track_uri") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`DROP TABLE "track_playcount"`); //manually added
+        //await queryRunner.query(`DROP TABLE "track_playcount"`); //manually added
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

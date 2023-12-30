@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AlbumModule } from './album/album.module';
 import { ArtistModule } from './artist/artist.module';
 import { SpotifyModule } from './spotify/spotify.module';
+import { PlaycountModule } from './playcount/playcount.module';
 import typeorm from './config/typeorm';
 
 @Module({
@@ -25,6 +26,7 @@ import typeorm from './config/typeorm';
     AlbumModule,
     ArtistModule,
     SpotifyModule,
+    PlaycountModule,
   ],
 })
 export class AppModule {}
