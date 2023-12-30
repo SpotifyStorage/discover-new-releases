@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { SpotifyService } from 'src/spotify/spotify.service';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PlaycountDto } from './dto/playcount.dto';
 
 @ApiTags('Track')
@@ -9,7 +9,6 @@ import { PlaycountDto } from './dto/playcount.dto';
 export class TrackController {
     constructor(
       private readonly trackService: TrackService,
-      private readonly spotifyService: SpotifyService
     ) {}
 
     logger = new Logger(TrackController.name)
