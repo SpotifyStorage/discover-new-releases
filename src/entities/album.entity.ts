@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany } from 'typeorm';
-import { ArtistEntity } from './artist.entity';
-import { TrackEntity } from './track.entity';
+import { ArtistDataEntity } from './artist-data.entity';
+import { TrackDataEntity } from './track-data.entity';
 
 @Entity({ name: 'album' })
 export class AlbumEntity {
@@ -10,11 +10,11 @@ export class AlbumEntity {
   @Column()
   name: string;
 
-  @OneToMany(() => TrackEntity, (track) => track.album, {
+  @OneToMany(() => TrackDataEntity, (track) => track.album, {
     cascade: true
   })
-  tracks: TrackEntity[]
+  tracks: TrackDataEntity[]
 
-  @ManyToOne(() => ArtistEntity, (artist) => artist.albums)
-  artist: ArtistEntity
+  @ManyToOne(() => ArtistDataEntity, (artist) => artist.albums)
+  artist: ArtistDataEntity
 }

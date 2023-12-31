@@ -1,4 +1,4 @@
-import { Album } from "./spotify/album.interface";
+import { Album } from "./spotify-api/album.interface";
 
 export interface ApiResponseT4ils {
     success: boolean;

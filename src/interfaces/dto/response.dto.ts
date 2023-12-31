@@ -1,6 +1,6 @@
 import { PlaycountDto } from "src/playcount/dto/playcount.dto";
 
-export interface ResponseDto<Object> {
+export interface ResponseDto<T> {
     status: "success" | "failed",
-    data?: Object
+    data?: T
 }
