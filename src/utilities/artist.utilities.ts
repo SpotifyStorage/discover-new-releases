@@ -1,8 +1,8 @@
-import { ArtistEntity } from "src/entities/artist.entity"
-import { Artist } from "src/interfaces/spotify/artist.interface"
+import { ArtistDataEntity } from "src/entities/artist-data.entity"
+import { Artist } from "src/interfaces/spotify-api/artist.interface"
 
 export const artistToEntity = (artist: Artist) => {
-    const entity = new ArtistEntity()
+    const entity = new ArtistDataEntity()
     entity.artistUri = artist.id
     entity.name = artist.name
     entity.albums = []

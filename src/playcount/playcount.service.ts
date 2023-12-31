@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PlaycountEntity } from 'src/entities/playcount.entity';
+import { TrackStatsEntity } from 'src/entities/track-stats.entity';
 import { TrackService } from 'src/track/track.service';
 import { Between, DataSource, In, Repository } from 'typeorm';
 import { PlaycountDto } from './dto/playcount.dto';
@@ -12,8 +12,8 @@ export class PlaycountService {
     logger = new Logger(PlaycountService.name)
 
     constructor(
-        @InjectRepository(PlaycountEntity)
-        private playcountRepository: Repository<PlaycountEntity>,
+        @InjectRepository(TrackStatsEntity)
+        private playcountRepository: Repository<TrackStatsEntity>,
 
         private readonly trackService: TrackService,
         private dataSource: DataSource
@@ -135,7 +135,7 @@ export class PlaycountService {
 
         this.logger.verbose(`Adding playcount data for the following track ${playcount.uri}`)
 
-        const playcountEntity = new PlaycountEntity()
+        const playcountEntity = new TrackStatsEntity()
         playcountEntity.track = await this.trackService.findOneTrackByTrackUri(playcount.uri)
         playcountEntity.playcount = playcount.playcount
         playcountEntity.date = playcount.date
@@ -150,7 +150,7 @@ export class PlaycountService {
 
         await this.dataSource.createQueryBuilder()
             .insert()
-            .into(PlaycountEntity)
+            .into(TrackStatsEntity)
             .values(await Promise.all(playcountsData.map(async playcount => ({
                 track: await this.trackService.findOneTrackByTrackUri(playcount.uri),
                 playcount: playcount.playcount,

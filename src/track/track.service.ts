@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TrackEntity } from 'src/entities/track.entity';
-import { AlbumTrackItem } from 'src/interfaces/spotify/album.interface';
+import { TrackDataEntity } from 'src/entities/track-data.entity';
+import { AlbumTrackItem } from 'src/interfaces/spotify-api/album.interface';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
     constructor(
-        @InjectRepository(TrackEntity)
-        private tracksRepository: Repository<TrackEntity>
+        @InjectRepository(TrackDataEntity)
+        private tracksRepository: Repository<TrackDataEntity>
       ) {}
 
     private readonly logger = new Logger(TrackService.name);
@@ -18,13 +18,13 @@ export class TrackService {
         if (foundTrack != null) {
             return
         }
-        const trackEntity = new TrackEntity()
+        const trackEntity = new TrackDataEntity()
         trackEntity.name = track.name
         trackEntity.trackUri = track.uri
         return this.tracksRepository.save(trackEntity)
     }
 
-    async findOneTrackByTrackUri(trackUri: string): Promise<TrackEntity | null> {
+    async findOneTrackByTrackUri(trackUri: string): Promise<TrackDataEntity | null> {
         this.logger.verbose(`Searching in the DB for the following track '${trackUri}'`)
         return await this.tracksRepository.findOneBy({ trackUri: trackUri });
     }

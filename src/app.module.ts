@@ -5,8 +5,10 @@ import { TrackModule } from './track/track.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AlbumModule } from './album/album.module';
 import { ArtistModule } from './artist/artist.module';
-import { SpotifyModule } from './spotify/spotify.module';
+import { SpotifyApiModule } from './spotify-api/spotify-api.module';
 import { PlaycountModule } from './playcount/playcount.module';
+import { TokenModule } from './token/token.module';
+import { SpotifyPartnerModule } from './spotify-partner/spotify-partner.module';
 import typeorm from './config/typeorm';
 
 @Module({
@@ -25,8 +27,10 @@ import typeorm from './config/typeorm';
     TrackModule,
     AlbumModule,
     ArtistModule,
-    SpotifyModule,
+    SpotifyApiModule,
     PlaycountModule,
+    TokenModule,
+    SpotifyPartnerModule,
   ],
 })
 export class AppModule {}

@@ -1,9 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumEntity } from 'src/entities/album.entity';
-import { TrackEntity } from 'src/entities/track.entity';
-import { Album } from 'src/interfaces/spotify/album.interface';
+import { ArtistDataEntity } from 'src/entities/artist-data.entity';
+import { TrackDataEntity } from 'src/entities/track-data.entity';
+import { Album } from 'src/interfaces/spotify-api/album.interface';
+import { AlbumDto } from 'src/spotify-partner/dto/album.dto';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,10 +13,10 @@ export class AlbumService {
     constructor(
         @InjectRepository(AlbumEntity)
         private albumRepository: Repository<AlbumEntity>,
-        @InjectRepository(TrackEntity)
-        private tracksRepository: Repository<TrackEntity>,
+        @InjectRepository(TrackDataEntity)
+        private tracksRepository: Repository<TrackDataEntity>,
 
-        private readonly artistService: ArtistService
+        //private readonly artistService: ArtistService
     ) {}
     
     logger = new Logger(AlbumService.name)
@@ -23,26 +25,53 @@ export class AlbumService {
         this.logger.verbose('Searching in the DB for all albums')
         return this.albumRepository.find({select: {albumUri: true}})
     }
+    
+    addOneAlbum(artist: ArtistDataEntity, album: AlbumDto): AlbumEntity {
 
-    async addAlbum(album: Album) {
         this.logger.verbose(`Adding the following album '${album.uri}' to DB`)
-        const artist = await this.artistService.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])
-        const albumEntity = new AlbumEntity()
-        let tracks: TrackEntity[] = []
-        // album.tracks.items.forEach(async track => {
-        //     tracks.push(await this.addTrackWithoutAlbum(track))
-        // });
-        tracks = album.tracks.items.map((track) => {
-            const trackEntity = new TrackEntity()
-            trackEntity.name = track.name
-            trackEntity.trackUri = track.uri.split(":")[2]
-            return trackEntity
-        })
-        albumEntity.albumUri = album.id
-        albumEntity.name = album.name
-        albumEntity.tracks = tracks
-        albumEntity.artist = artist
-        return this.albumRepository.save(albumEntity)
+        return
+
     }
+    // the following method is good but it cannot be dependent on artistService
+    // must use eventEmitter instead : https://www.youtube.com/watch?v=-MlXwb42nKo&ab_channel=MariusEspejo
+    
+    // async addAlbum(album: Album) {
+    //     this.logger.verbose(`Adding the following album '${album.uri}' to DB`)
+    //     const artist = await this.artistService.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])
+    //     const albumEntity = new AlbumEntity()
+    //     let tracks: TrackDataEntity[] = []
+    //     // album.tracks.items.forEach(async track => {
+    //     //     tracks.push(await this.addTrackWithoutAlbum(track))
+    //     // });
+    //     tracks = album.tracks.items.map((track) => {
+    //         const trackEntity = new TrackDataEntity()
+    //         trackEntity.name = track.name
+    //         trackEntity.trackUri = track.uri.split(":")[2]
+    //         return trackEntity
+    //     })
+    //     albumEntity.albumUri = album.id
+    //     albumEntity.name = album.name
+    //     albumEntity.tracks = tracks
+    //     albumEntity.artist = artist
+    //     return this.albumRepository.save(albumEntity)
+    // }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // async addOneAlbumByAlbumUri(albumUri: string) {
+    //     this.logger.verbose(`Adding the following album '${albumUri}' to DB`)
+    //     //const artist = await this.artistService.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])
+    //     const albumEntity = new AlbumEntity()
+    //     let tracks: TrackDataEntity[] = []
+    //     tracks = album.tracks.items.map((track) => {
+    //         const trackEntity = new TrackDataEntity()
+    //         trackEntity.name = track.name
+    //         trackEntity.trackUri = track.uri.split(":")[2]
+    //         return trackEntity
+    //     })
+    //     albumEntity.albumUri = album.id
+    //     albumEntity.name = album.name
+    //     albumEntity.tracks = tracks
+    //     albumEntity.artist = artist
+    //     return this.albumRepository.save(albumEntity)
+    // }
 
 }
