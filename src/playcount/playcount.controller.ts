@@ -11,30 +11,6 @@ export class PlaycountController {
     constructor(
       private readonly playcountService: PlaycountService
     ) {}
-    
-    @Post('many')
-    @ApiBody({ type: [PlaycountDto] })
-    @ApiOperation({summary: 'Add multiple Playcount object (uri, playcout, date) to database'})
-    appendManyPlaycountsToDatabase(@Body() playcounts: PlaycountDto[]) {
-      this.logger.verbose(`Add ${playcounts.length} playcounts to DB controller called `)
-      return this.playcountService.addManyPlaycounts(playcounts)
-    }
-
-    @Post('one')
-    @ApiBody({ type: PlaycountDto })
-    @ApiOperation({summary: 'Add one Playcount object (uri, playcout, date) to database'})
-    appendOnePlaycountToDatabase(@Body() playcount: PlaycountDto) {
-      this.logger.verbose(`Add '${playcount.uri}' playcount to DB controller called `)
-      return this.playcountService.addOnePlaycount(playcount)
-    }
-
-    @Get(':id')
-    @ApiParam({ name: 'trackId'})
-    @ApiOperation({summary: 'Get all playcount data of one track from the database'})
-    async findPlaycountsByTrackUri(@Param('trackId') trackUri) {
-        this.logger.verbose('Get playcount by track controller called');
-        return await this.playcountService.findPlaycountsByTrackUri(trackUri)
-    }
 
     @Get('latest')
     @ApiQuery({ name: 'trackId'})
@@ -61,5 +37,29 @@ export class PlaycountController {
     async findPlaycountsByDatesAndTrackUri(@Query('trackId') trackUri, @Query('from') fromDate, @Query('to') toDate) {
         this.logger.verbose('Called -> get playcount by track between two dates');
         return this.playcountService.findPlaycountsByDatesAndTrackUri(trackUri, {start: fromDate, end: toDate})
+    }
+  
+    @Get(':id')
+    @ApiParam({ name: 'trackId'})
+    @ApiOperation({summary: 'Get all playcount data of one track from the database'})
+    async findPlaycountsByTrackUri(@Param('trackId') trackUri) {
+        this.logger.verbose('Get playcount by track controller called');
+        return await this.playcountService.findPlaycountsByTrackUri(trackUri)
+    }
+
+    @Post('many')
+    @ApiBody({ type: [PlaycountDto] })
+    @ApiOperation({summary: 'Add multiple Playcount object (uri, playcout, date) to database'})
+    appendManyPlaycountsToDatabase(@Body() playcounts: PlaycountDto[]) {
+      this.logger.verbose(`Add ${playcounts.length} playcounts to DB controller called `)
+      return this.playcountService.addManyPlaycounts(playcounts)
+    }
+
+    @Post('one')
+    @ApiBody({ type: PlaycountDto })
+    @ApiOperation({summary: 'Add one Playcount object (uri, playcout, date) to database'})
+    appendOnePlaycountToDatabase(@Body() playcount: PlaycountDto) {
+      this.logger.verbose(`Add '${playcount.uri}' playcount to DB controller called `)
+      return this.playcountService.addOnePlaycount(playcount)
     }
 }
