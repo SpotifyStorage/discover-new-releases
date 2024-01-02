@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
-import { AlbumService } from 'src/album/album.service';
+import { InjectRepository } from '@nestjs/typeorm';
 import { AlbumEntity } from 'src/entities/album.entity';
 import { ArtistDataEntity } from 'src/entities/artist-data.entity';
 import { TrackDataEntity } from 'src/entities/track-data.entity';
 import { Artist } from 'src/interfaces/spotify-api/artist.interface';
 import { SpotifyApiService } from 'src/spotify-api/spotify-api.service';
-import { SpotifyPartnerService } from 'src/spotify-partner/spotify-partner.service';
+import { ArtistDto } from 'src/spotify-partner/dto';
 import { artistToEntity } from 'src/utilities/artist.utilities';
-import { Connection, DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
+import { ArtistsUriDto } from './dto/artists-uri.dto';
 
 @Injectable()
 export class ArtistService {
@@ -18,13 +18,9 @@ export class ArtistService {
 
         @InjectRepository(AlbumEntity)
         private albumRepository: Repository<AlbumEntity>,
-
-        @InjectConnection() private readonly connection: Connection,
         
         private dataSource: DataSource,
         private readonly spotifyApiService: SpotifyApiService,
-        private readonly spotifyPartnerService: SpotifyPartnerService,
-        private readonly albumService: AlbumService,
     ) {}
     logger = new Logger(ArtistService.name);
 
@@ -32,7 +28,7 @@ export class ArtistService {
         return this.artistDataRepository.findOneBy({ artistUri: artistUri });
     }
 
-    async addManyArtists(artists: Artist[]) {
+    async addManyArtists(artists: Artist[]): Promise<ArtistDataEntity[]> {
         this.logger.verbose(`Adding ${artists.length} artists`)
         let uniqueArtist = artists
         const existingArtists = await this.artistDataRepository.find({
@@ -72,7 +68,7 @@ export class ArtistService {
     //     this.artistRepository.save(artistEntity)
     // }
 
-    async findOneArtist(artistUri: string) {
+    async findOneArtist(artistUri: string): Promise<ArtistDataEntity> {
         return this.artistDataRepository.findOne({
             where: {
                 artistUri: artistUri
@@ -85,17 +81,16 @@ export class ArtistService {
         })
     }
 
-    async addOneArtist(artistUri: string): Promise<ArtistDataEntity> {
+    async addOneArtist(artistData: ArtistDto): Promise<ArtistDataEntity> {
 
         const artistEntity = new ArtistDataEntity()
 
-        const artistData = await this.spotifyPartnerService.getArtistDataDto(artistUri)
         for (var album of artistData.albums) {
             const tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
             album.tracks = tracks
         }
 
-        artistEntity.artistUri = artistUri
+        artistEntity.artistUri = artistData.uri
         artistEntity.name = artistData.name
         artistEntity.albums = artistData.albums.map((album) => {
             this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
@@ -114,18 +109,26 @@ export class ArtistService {
 
         this.artistDataRepository.save(artistEntity)
 
-        return this.findOneArtistByArtistUri(artistUri)
+        return this.findOneArtistByArtistUri(artistData.uri)
     }
 
-    // async findAllArtistsUri() {
-    //     this.logger.verbose('Searching in the DB for all artists!')
-    //     const resp = this.connection.query('SELECT * FROM artist_data')
-    //     console.log(resp)
-    //     return resp
-    // }
-
-    async findAllArtistsUri(): Promise<{artistUri: string}[]> {
+    async findAllArtistsUri(): Promise<ArtistsUriDto[]> {
         this.logger.verbose("Getting all artists' uri in the database")
-        return this.artistDataRepository.find({select: {artistUri: true}})
+        const artistsUri = await this.artistDataRepository.find({select: {artistUri: true}})
+        return artistsUri.map(artist => ({
+            uri: artist.artistUri
+        }))
+    }
+
+    async test(x: any) {
+        return {uri: x}
+    }
+
+    async addManyArtistsByUri(listOfArtists: ArtistsUriDto[]): Promise<ArtistDataEntity[]> {
+        let toReturn = []
+        for (var artist of listOfArtists) {
+            toReturn.push(this.test(artist.uri))
+        }
+        return toReturn
     }
 }
