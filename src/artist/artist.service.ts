@@ -131,4 +131,17 @@ export class ArtistService {
         }
         return toReturn
     }
+
+    async deleteOneArtist(artistUri) {
+        // must add the onDelete: "CASCADE" property ti the artist's entity
+
+        await this.dataSource
+            .createQueryBuilder()
+            .delete()
+            .from(ArtistDataEntity)
+            .where("artist_uri = :uri", {uri: artistUri})
+            .execute()
+        return this.artistDataRepository.find()
+
+    }
 }

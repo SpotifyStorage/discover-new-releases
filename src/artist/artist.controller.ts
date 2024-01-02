@@ -77,8 +77,9 @@ export class ArtistController {
   }
 
   @Delete()
-  async deleteOneArtistByUri() {
-    return
+  @ApiQuery({name: 'artistId'})
+  async deleteOneArtistByUri(@Query('artistId') artistUri) {
+    return this.artistService.deleteOneArtist(artistUri)
   }
 }
 
