@@ -7,7 +7,8 @@ export class TrackStatsEntity {
     id: number;
 
     @ManyToOne(() => TrackDataEntity, (track) => track.trackUri, {
-        cascade: true
+        cascade: true,
+        onDelete: 'CASCADE'
     })
     @JoinColumn({name: "track_uri"})
     track: TrackDataEntity;
