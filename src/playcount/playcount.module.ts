@@ -1,16 +1,22 @@
 import { Module } from '@nestjs/common';
-import { PlaycountController } from './playcount.controller';
+import { PlaycountTrackController } from './playcount-track.controller';
 import { PlaycountService } from './playcount.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TrackStatsEntity } from 'src/entities/track-stats.entity';
 import { TrackModule } from 'src/track/track.module';
+import { PlaycountAlbumController } from './playcount-album.controller';
+import { PlaycountArtistController } from './playcount-artist.controller';
 
 @Module({
   imports: [
     TrackModule,
     TypeOrmModule.forFeature([TrackStatsEntity])
   ],
-  controllers: [PlaycountController],
+  controllers: [
+    PlaycountTrackController,
+    PlaycountAlbumController,
+    PlaycountArtistController
+  ],
   providers: [PlaycountService],
   exports: [PlaycountService]
 })
