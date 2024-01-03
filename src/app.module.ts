@@ -10,6 +10,7 @@ import { PlaycountModule } from './playcount/playcount.module';
 import { TokenModule } from './token/token.module';
 import { SpotifyPartnerModule } from './spotify-partner/spotify-partner.module';
 import typeorm from './config/typeorm';
+import { RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [

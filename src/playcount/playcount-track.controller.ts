@@ -3,10 +3,10 @@ import { PlaycountService } from './playcount.service';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PlaycountDto } from './dto/playcount.dto';
 
-@ApiTags('Playcount')
-@Controller('playcount')
-export class PlaycountController {
-    private readonly logger = new Logger(PlaycountController.name);
+@ApiTags('PlaycountTrack')
+@Controller('playcount/track')
+export class PlaycountTrackController {
+    private readonly logger = new Logger(PlaycountTrackController.name);
 
     constructor(
       private readonly playcountService: PlaycountService
@@ -43,7 +43,7 @@ export class PlaycountController {
     @ApiParam({ name: 'trackId'})
     @ApiOperation({summary: 'Get all playcount data of one track from the database'})
     async findPlaycountsByTrackUri(@Param('trackId') trackUri) {
-        this.logger.verbose('Get playcount by track controller called');
+        this.logger.verbose(`Get playcount by track controller called for ${trackUri}`);
         return await this.playcountService.findPlaycountsByTrackUri(trackUri)
     }
 
