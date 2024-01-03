@@ -15,6 +15,8 @@ export class AlbumEntity {
   })
   tracks: TrackDataEntity[]
 
-  @ManyToOne(() => ArtistDataEntity, (artist) => artist.albums)
+  @ManyToOne(() => ArtistDataEntity, (artist) => artist.albums, {
+    onDelete: 'CASCADE'
+  })
   artist: ArtistDataEntity
 }

@@ -7,7 +7,7 @@ export class ArtistStatsEntity {
     id: number;
 
     @ManyToOne(() => ArtistDataEntity, (artist) => artist.artistUri, {
-        cascade: true
+        onDelete: 'CASCADE'
     })
     @JoinColumn({name: "artist_uri"})
     artist: ArtistDataEntity;

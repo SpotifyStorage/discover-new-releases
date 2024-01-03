@@ -16,7 +16,9 @@ export class TrackDataEntity {
   })
   popularity?: number;
 
-  @ManyToOne(() => AlbumEntity, (album) => album.tracks)
+  @ManyToOne(() => AlbumEntity, (album) => album.tracks, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({name: "album_uri"})
   album: AlbumEntity
 
