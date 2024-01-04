@@ -7,8 +7,9 @@ import { Artist } from 'src/interfaces/spotify-api/artist.interface';
 import { SpotifyApiService } from 'src/spotify-api/spotify-api.service';
 import { ArtistDto } from 'src/spotify-partner/dto';
 import { artistToEntity } from 'src/utilities/artist.utilities';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, Like, Repository } from 'typeorm';
 import { ArtistsUriDto } from './dto/artists-uri.dto';
+import { SpotifyPartnerService } from 'src/spotify-partner/spotify-partner.service';
 
 @Injectable()
 export class ArtistService {
@@ -21,6 +22,7 @@ export class ArtistService {
         
         private dataSource: DataSource,
         private readonly spotifyApiService: SpotifyApiService,
+        private readonly spotifyPartnerService: SpotifyPartnerService
     ) {}
     logger = new Logger(ArtistService.name);
 
@@ -81,7 +83,9 @@ export class ArtistService {
         })
     }
 
-    async addOneArtist(artistData: ArtistDto): Promise<ArtistDataEntity> {
+    async addOneArtist(artistUri: string): Promise<ArtistDataEntity> {
+
+        const artistData = await this.spotifyPartnerService.getArtistDataDto(artistUri)
 
         const artistEntity = new ArtistDataEntity()
 
@@ -127,7 +131,7 @@ export class ArtistService {
     async addManyArtistsByUri(listOfArtists: ArtistsUriDto[]): Promise<ArtistDataEntity[]> {
         let toReturn = []
         for (var artist of listOfArtists) {
-            toReturn.push(this.test(artist.uri))
+            toReturn.push(await this.addOneArtist(artist.uri))
         }
         return toReturn
     }
@@ -143,5 +147,13 @@ export class ArtistService {
             .execute()
         return this.artistDataRepository.find()
 
+    }
+
+    async searchArtists(artistName: string): Promise<ArtistDataEntity[]> {
+        return await this.artistDataRepository.find({
+            where: {name: Like(`%${artistName.split('').join('%')}%`)},
+            take: 10
+            //select: {name: true}
+        })
     }
 }

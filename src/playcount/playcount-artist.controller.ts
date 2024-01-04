@@ -39,11 +39,11 @@ export class PlaycountArtistController {
         return this.playcountService.findPlaycountsByDatesAndTrackUri(trackUri, {start: fromDate, end: toDate})
     }
   
-    @Get(':id')
-    @ApiParam({ name: 'trackId'})
+    @Get(':artistId')
+    @ApiParam({ name: 'artistId'})
     @ApiOperation({summary: 'Get all playcount data of one track from the database'})
-    async findPlaycountsByTrackUri(@Param('trackId') trackUri) {
-        this.logger.verbose(`Get playcount by track controller called for ${trackUri}`);
-        return await this.playcountService.findPlaycountsByTrackUri(trackUri)
+    async findPlaycountsByTrackUri(@Param('artistId') artistUri) {
+        this.logger.verbose(`Get playcount by track controller called for ${artistUri}`);
+        return await this.playcountService.findPlaycountsByTrackUri(artistUri)
     }
 }

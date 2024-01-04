@@ -6,6 +6,12 @@ async function bootstrap() {
   const app = await NestFactory.create(
     AppModule, {logger: ['error', 'warn', 'log', 'debug', 'verbose']}
   );
+  app.enableCors({
+    origin: [
+      'http://localhost:3030',
+      'http://localhost:4200'
+    ]
+  })
 
   const config = new DocumentBuilder()
   .setTitle('Spotify API')
