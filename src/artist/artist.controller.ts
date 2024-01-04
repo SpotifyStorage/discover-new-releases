@@ -19,11 +19,29 @@ export class ArtistController {
     private readonly spotifyApiService: SpotifyApiService
   ) {}
 
+  @Get('search')
+  @ApiQuery({ name: 'artistName' })
+  searchArtistsByName(@Query('artistName') artistName: string): Promise<ArtistDataEntity[]> {
+    if (artistName.length < 0) {
+      return new Promise((resolve, reject) => {
+        resolve([]);
+      })
+    }
+    return this.artistService.searchArtists(artistName)
+  }
+
   @Get('all')
   @ApiOperation({summary: "Get a list of all the artists' uri in the database"})
   async findAllAlbums() {
     this.logger.verbose("Get all albums' uri in the DB controller called")
     return this.artistService.findAllArtistsUri()
+  }
+
+  @Get('test')
+  @ApiQuery({ name: 'test' })
+  async test(@Query('test') test) {
+    //return this.spotifyPartnerService.getArtistAlbumsDto(test)
+    return this.spotifyApiService.getArtistsFromPlaylistTrackItems(test)
   }
 
   @Get(':id')
@@ -46,10 +64,11 @@ export class ArtistController {
     // Assigne a une variable toutes les artistes. Itere cette variable -> ajoue BD. Return variable initiale
 
     const artists = await this.spotifyApiService.getArtistsFromPlaylistTrackItems(playlistUri)
-    let artistsUri = artists.map(artist => artist.uri)
-    const uniqueArtists = artists.filter((artist, index) => artistsUri.indexOf(artist.uri) === index)
+    let artistsUriList = artists.map(artist => artist.uri)
+    
+    const uniqueArtistsList = artists.filter((artist, index) => artistsUriList.indexOf(artist.uri) === index).map(album => ({uri: album.id}))
 
-    return await this.artistService.addManyArtists(uniqueArtists)
+    return await this.appendManyPlaycountsToDatabase(uniqueArtistsList)
   }
 
   @Post('many')
@@ -68,11 +87,11 @@ export class ArtistController {
   @ApiOperation({summary: "Add one artist with all it's albums and their tracks to the database"})
   async addOneArtistByUri(@Query('artistId') artistUri): Promise<ResponseDto<ArtistDataEntity>> {
 
-    const artistData = await this.spotifyPartnerService.getArtistDataDto(artistUri)
+    
 
     return {
       status: 'success',
-      data: await this.artistService.addOneArtist(artistData)
+      data: await this.artistService.addOneArtist(artistUri)
     }
   }
 
