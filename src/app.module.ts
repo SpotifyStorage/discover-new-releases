@@ -11,6 +11,10 @@ import { TokenModule } from './token/token.module';
 import { SpotifyPartnerModule } from './spotify-partner/spotify-partner.module';
 import typeorm from './config/typeorm';
 import { RouterModule } from '@nestjs/core';
+// import { DiscoveryService } from './discovery/discovery.service';
+// import { DiscoveryController } from './discovery/discovery.controller';
+// import { DiscoveryModule } from './discovery/discovery.module';
+import { ServiceBusClient } from '@azure/service-bus';
 
 @Module({
   imports: [
@@ -32,6 +36,9 @@ import { RouterModule } from '@nestjs/core';
     PlaycountModule,
     TokenModule,
     SpotifyPartnerModule,
+    //DiscoveryModule,
   ],
+  providers: [],
+  controllers: [],
 })
 export class AppModule {}
