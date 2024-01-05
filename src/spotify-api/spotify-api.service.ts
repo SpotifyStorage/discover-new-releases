@@ -23,8 +23,8 @@ export class SpotifyApiService {
 
   async callAlbumFromArtist(artistURI: string = '5eAWCfyUhZtHHtBdNk56l1') {
     const token = (await this.tokenService.getValidApiToken()).access_token
-    console.log(token)
     const header = {'Authorization': `Bearer ${token}`};
+    this.logger.verbose(`Getting albums from artist ${artistURI}`)
     //const header = {"Authorization" : `Bearer ${tokenStr}`}}
 
     return lastValueFrom(
@@ -41,6 +41,7 @@ export class SpotifyApiService {
   async getPlaylistTrackItems(playlistURI: string) {
     const token = (await this.tokenService.getValidApiToken()).access_token
     const header = {'Authorization': `Bearer ${token}`};
+    this.logger.verbose(`Getting tracks from playlist ${playlistURI}`)
 
     return lastValueFrom(
       this.httpService
@@ -69,7 +70,7 @@ export class SpotifyApiService {
   async getTracksDtoFromAlbum(albumURI: string): Promise<TrackDto[]> {
     const token = (await this.tokenService.getValidApiToken()).access_token
     const header = {'Authorization': `Bearer ${token}`};
-    console.log(header)
+    this.logger.verbose(`Getting tracks from album ${albumURI}`)
 
     return await lastValueFrom(
       this.httpService
@@ -89,6 +90,7 @@ export class SpotifyApiService {
   async getAlbumFromAlbumSimplified(albumSimplified: AlbumSimplified) {
     const token = (await this.tokenService.getValidApiToken()).access_token
     const header = {'Authorization': `Bearer ${token}`};
+    this.logger.verbose(`Getting album from albumSimplified ${albumSimplified.id}`)
 
     return lastValueFrom(
       this.httpService
@@ -105,7 +107,8 @@ export class SpotifyApiService {
     // ATTENTION: ne regarde que les 20 derniers albums!
     const token = (await this.tokenService.getValidApiToken()).access_token
     const header = {'Authorization': `Bearer ${token}`};
-
+    this.logger.verbose(`Getting albums from artist ${artistUri}`)
+    
     return lastValueFrom(
       this.httpService
       .get<{
