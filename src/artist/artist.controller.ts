@@ -19,6 +19,12 @@ export class ArtistController {
     private readonly spotifyApiService: SpotifyApiService
   ) {}
 
+  @Get('test')
+  @ApiQuery({ name: 'artistName' })
+  testtest(@Query('artistName') artistName: string) {
+    return this.spotifyApiService.getTracksDtoFromAlbum(artistName)
+  }
+
   @Get('search')
   @ApiQuery({ name: 'artistName' })
   searchArtistsByName(@Query('artistName') artistName: string): Promise<ArtistDataEntity[]> {

@@ -69,6 +69,7 @@ export class SpotifyApiService {
   async getTracksDtoFromAlbum(albumURI: string): Promise<TrackDto[]> {
     const token = (await this.tokenService.getValidApiToken()).access_token
     const header = {'Authorization': `Bearer ${token}`};
+    console.log(header)
 
     return await lastValueFrom(
       this.httpService
