@@ -90,13 +90,12 @@ export class ArtistService {
         const artistEntity = new ArtistDataEntity()
 
         for (var album of artistData.albums) {
-            const tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
-            album.tracks = tracks
+            album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
         }
 
         artistEntity.artistUri = artistData.uri
         artistEntity.name = artistData.name
-        artistEntity.albums = artistData.albums.map((album) => {
+        artistEntity.albums = await Promise.all(artistData.albums.map(async (album) => {
             this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
             const albumEntity = new AlbumEntity()
             albumEntity.albumUri = album.uri
@@ -107,11 +106,11 @@ export class ArtistService {
                 trackEntity.trackUri = track.uri
                 return trackEntity
             })
-            this.albumRepository.save(albumEntity)
+            await this.albumRepository.save(albumEntity)
             return albumEntity
-        })
+        }))
 
-        this.artistDataRepository.save(artistEntity)
+        await this.artistDataRepository.save(artistEntity)
 
         return this.findOneArtistByArtistUri(artistData.uri)
     }

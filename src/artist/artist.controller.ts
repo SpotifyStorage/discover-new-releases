@@ -92,9 +92,6 @@ export class ArtistController {
   @ApiQuery({name: 'artistId'})
   @ApiOperation({summary: "Add one artist with all it's albums and their tracks to the database"})
   async addOneArtistByUri(@Query('artistId') artistUri): Promise<ResponseDto<ArtistDataEntity>> {
-
-    
-
     return {
       status: 'success',
       data: await this.artistService.addOneArtist(artistUri)
