@@ -10,6 +10,7 @@ import { artistToEntity } from 'src/utilities/artist.utilities';
 import { DataSource, In, Like, Repository } from 'typeorm';
 import { ArtistsUriDto } from './dto/artists-uri.dto';
 import { SpotifyPartnerService } from 'src/spotify-partner/spotify-partner.service';
+import { MinimalArtist } from 'src/artist-queue/interface/artist-minimal.interface';
 
 @Injectable()
 export class ArtistService {
@@ -120,6 +121,19 @@ export class ArtistService {
         const artistsUri = await this.artistDataRepository.find({select: {artistUri: true}})
         return artistsUri.map(artist => ({
             uri: artist.artistUri
+        }))
+    }
+
+    async findAllArtistsUriAndAlbumCount(): Promise<MinimalArtist[]> {
+        this.logger.verbose("Getting all artists' uri and album count in the database")
+        
+        const artistsUri = await this.artistDataRepository.find({
+            select: {artistUri: true, albums: true}, 
+            relations: {albums: true},
+        })
+        return artistsUri.map(artist => ({
+            artistUri: artist.artistUri,
+            albumCount: artist.albums.length
         }))
     }
 
