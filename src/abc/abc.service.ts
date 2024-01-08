@@ -15,7 +15,7 @@ export class AbcService {
     ) {}
 
     async populateQueueWithArtistsUriAndAlbumcount(listOfArtist: MinimalArtist[]) {
-        //this.logger.verbose(`Populating the artist queue with ${listOfArtist.length} artists`)
+        this.logger.verbose(`Populating the artist queue with ${listOfArtist.length} artists`)
         listOfArtist.forEach( (artist) => {
             console.log(artist)
             this.artistQueueService.sendMessages([artist])
