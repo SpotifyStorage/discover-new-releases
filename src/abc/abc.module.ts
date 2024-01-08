@@ -12,6 +12,7 @@ import { SpotifyPartnerModule } from 'src/spotify-partner/spotify-partner.module
     SpotifyPartnerModule,
   ],
   providers: [AbcService],
-  controllers: [AbcController]
+  controllers: [AbcController],
+  exports: [AbcService]
 })
 export class AbcModule {}

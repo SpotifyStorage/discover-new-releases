@@ -53,7 +53,8 @@ export class AppModule implements OnModuleInit {
         const receiver = this.artistQueueService.addReceiver(async message => {
             //this.logger.verbose(`Received a messages from the queue containing ${message.body.length} albums`)
             message.body.forEach(async artist => {
-                this.abcService.getArtistDailyStats(artist)
+                const newMessage = await this.abcService.getArtistDailyStats(artist)
+                console.log(newMessage)
             })
         })
     }
