@@ -1,8 +1,8 @@
 # compiled output
 /dist
 /node_modules
-.env-spotify
-.env
+*.env-spotify
+*.env
 
 # Logs
 logs
