@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ArtistQueueService } from 'src/artist-queue/artist-queue.service';
 import { MinimalArtist } from 'src/artist-queue/interface/artist-minimal.interface';
 import { SpotifyPartnerService } from 'src/spotify-partner/spotify-partner.service';
@@ -6,7 +6,7 @@ import { ArtistStatQueueMessageBody } from './dto/artist-daily.interface';
 
 @Injectable()
 export class AbcService {
-    //private readonly logger = new Logger(DiscoveryService.name);
+    private readonly logger = new Logger(AbcService.name);
 
     constructor(
         private readonly artistQueueService: ArtistQueueService,
@@ -14,7 +14,7 @@ export class AbcService {
     ) {}
 
     async populateQueueWithArtistsUriAndAlbumcount(listOfArtist: MinimalArtist[]) {
-        //this.logger.verbose(`Populating the artist queue with ${listOfArtist.length} artists`)
+        this.logger.verbose(`Populating the artist queue with ${listOfArtist.length} artists`)
         listOfArtist.forEach( (artist) => {
             console.log(artist)
             this.artistQueueService.sendMessages([artist])
