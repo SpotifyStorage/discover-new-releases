@@ -4,5 +4,4 @@ export interface ArtistStat {
     monthlyListeners: number;
     worldRank: number;
     date: Date;
-    albumCount?: number;
 }

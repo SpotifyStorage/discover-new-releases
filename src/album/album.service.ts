@@ -25,8 +25,25 @@ export class AlbumService {
         this.logger.verbose('Searching in the DB for all albums')
         return this.albumRepository.find({select: {albumUri: true}})
     }
+
+    findOneAlbumByUri(albumUri: string): Promise<AlbumEntity | null> {
+        return this.albumRepository.findOneBy({albumUri: albumUri})
+    }
     
-    addOneAlbum(artist: ArtistDataEntity, album: AlbumDto): AlbumEntity {
+    async addOneAlbumWithoutTracks(artist: ArtistDataEntity, album: AlbumDto) {
+        this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
+        const albumEntity = new AlbumEntity()
+        albumEntity.albumUri = album.uri
+        albumEntity.name = album.name
+        albumEntity.artist = artist
+        albumEntity.tracks = album.tracks.map((track) => {
+            const trackEntity = new TrackDataEntity()
+            trackEntity.name = track.name
+            trackEntity.trackUri = track.uri
+            return trackEntity
+        })
+        await this.albumRepository.save(albumEntity)
+        return albumEntity
 
         this.logger.verbose(`Adding the following album '${album.uri}' to DB`)
         return
