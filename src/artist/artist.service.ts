@@ -10,7 +10,7 @@ import { artistToEntity } from 'src/utilities/artist.utilities';
 import { DataSource, In, Like, Repository } from 'typeorm';
 import { ArtistsUriDto } from './dto/artists-uri.dto';
 import { SpotifyPartnerService } from 'src/spotify-partner/spotify-partner.service';
-import { MinimalArtist } from 'src/artist-queue/interface/artist-minimal.interface';
+import { MinimalArtist } from 'src/queues/interface/artist-minimal.interface';
 
 @Injectable()
 export class ArtistService {

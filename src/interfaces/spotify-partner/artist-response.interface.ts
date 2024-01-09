@@ -69,28 +69,73 @@ export interface ArtistResponse {
                 latest: any;
                 popularReleasesAlbums: {
                     totalCount: number;
+                    items: Album[];
+                };
+                singles: {
+                    totalCount: number;
                     items: {
-                        id: string;
-                        uri: string;
-                        name: string;
-                        type: string;
-                        copyright: {
-                            items: {
-                                type: string;
-                                text: string;
-                            }[];
+                        releases: {
+                            items: Album[]
                         };
-                        date: SpotDate;
-                        coverArt: ImagesSources;
-                        tracks: {
-                            totalCount: number;
+                    }[];
+                };
+                albums: {
+                    totalCount: number;
+                    items: {
+                        releases: {
+                            items: Album[]
                         };
-                        label: string;
-                        playability: {
-                            playable: boolean;
-                            reason: string;
+                    }[];
+                };
+                compilations: {
+                    totalCount: number;
+                    items: {
+                        releases: {
+                            items: Album[]
                         };
-                        sharingInfo: SharingInfo;
+                    }[];
+                };
+                topTracks: {
+                    items: {
+                        uid: string;
+                        track: {
+                            id: string;
+                            uri: string;
+                            name: string;
+                            playcount: number;
+                            discNumber: number;
+                            duration: {
+                                totalMilliseconds: number;
+                            };
+                            playability: {
+                                playable: boolean;
+                                reason: string;
+                            };
+                            contentRating: {
+                                label: string;
+                            };
+                            artists: {
+                                items: {
+                                    uri: string;
+                                    profile: {
+                                        name: string;
+                                    };
+                                }[];
+                            };
+                            associations: {
+                                associatedVideos: {
+                                    totalCount: number;
+                                };
+                            };
+                            albumOfTrack: {
+                                uri: string;
+                                coverArt: {
+                                    sources: {
+                                        url: string;
+                                    }[];
+                                };
+                            };
+                        };
                     }[];
                 };
             };
@@ -257,3 +302,27 @@ interface Playlist {
         items: ImagesSources[];
     };
 };
+
+interface Album {
+    id: string;
+    uri: string;
+    name: string;
+    type: string;
+    copyright: {
+        items: {
+            type: string;
+            text: string;
+        }[];
+    };
+    date: SpotDate;
+    coverArt: ImagesSources;
+    tracks: {
+        totalCount: number;
+    };
+    label: string;
+    playability: {
+        playable: boolean;
+        reason: string;
+    };
+    sharingInfo: SharingInfo;
+}

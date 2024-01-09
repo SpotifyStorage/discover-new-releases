@@ -47,7 +47,6 @@ export class ArtistQueueService implements OnModuleInit {
     }
 
     async sendMessages(message: MinimalArtist[]) {
-        console.log('ok')
         await this.sender.sendMessages({
             body: message
         })

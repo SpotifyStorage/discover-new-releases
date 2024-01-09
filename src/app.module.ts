@@ -10,9 +10,9 @@ import { PlaycountModule } from './playcount/playcount.module';
 import { TokenModule } from './token/token.module';
 import { SpotifyPartnerModule } from './spotify-partner/spotify-partner.module';
 import typeorm from './config/typeorm';
-import { ArtistQueueModule } from './artist-queue/artist-queue.module';
-import { AbcModule } from './abc/abc.module';
-import { AbcService } from './abc/abc.service';
+import { DiscoverModule } from './discover/discover.module';
+import { DiscoverService } from './discover/discover.service';
+import { ArtistQueueModule } from './queues/artist-queue.module';
 
 @Module({
     imports: [
@@ -34,8 +34,8 @@ import { AbcService } from './abc/abc.service';
         PlaycountModule,
         TokenModule,
         SpotifyPartnerModule,
-        ArtistQueueModule,
-        AbcModule,
+        //ArtistQueueModule,
+        DiscoverModule,
     ],
     providers: [],
     controllers: [],
@@ -43,10 +43,10 @@ import { AbcService } from './abc/abc.service';
 export class AppModule implements OnModuleInit {
 
     constructor(
-        private readonly abcService: AbcService,
+        private readonly discoverService: DiscoverService,
     ) { }
 
     onModuleInit() {
-        this.abcService.initArtistQueueReceiver()
+        this.discoverService.initArtistQueueReceiver()
     }
 }

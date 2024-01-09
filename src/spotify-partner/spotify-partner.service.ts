@@ -29,9 +29,9 @@ export class SpotifyPartnerService {
             'authorization': `Bearer ${(await this.tokenService.getValidPartnerToken()).accessToken}`
         }
     }
-    async getArtistData(artistUri: string): Promise<ArtistResponse> {
+    async getArtistData(artistUri: string, logger: boolean = true): Promise<ArtistResponse> {
         
-        this.logger.verbose('Calling spotify API for artist data')
+        logger ? this.logger.verbose(`Calling spotify API for artist data of '${artistUri}'`) : null;
     
         const payload = {
           'operationName': 'queryArtistOverview',
