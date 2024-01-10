@@ -79,31 +79,31 @@ export class DiscoverService {
     checkForMissingAlbums(artist: MinimalArtist, artistStat: ArtistStatPreQueue) {
         if (artistStat.albumCount > artist.albumCount) {
             this.logger.verbose(`Must add ${artistStat.albumCount - artist.albumCount} album(s) to the db for '${artist.artistUri}'`)
+            
             if (artistStat.discography.albums.totalCount <= 10) {
                 this.logger.verbose('Can add an album from the data.')
                 artistStat.discography.albums.items.forEach( async (album) => {
-                    console.log(await this.albumService.findOneAlbumByUri(album.uri))
                     if (! await this.albumService.findOneAlbumByUri(album.uri)) {
-                        this.logger.warn(album.uri)
+                        this.logger.warn(`ehlalalla -> ${album.uri}`)
                         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
-                        //this.albumService.addOneAlbumWithoutTracks(artist, album)
+                        album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
+                        console.log(album)
+                        this.albumService.addOneAlbumWithoutTracks(artist, album)
                     }
                 })
             } else if (artistStat.discography.singles.totalCount <= 10) {
                 this.logger.verbose('Can add a single from the data.')
                 artistStat.discography.singles.items.forEach( async (single) => {
-                    if (!this.albumService.findOneAlbumByUri(single.uri)) {
-                        console.log(single.uri)
+                    if (! await this.albumService.findOneAlbumByUri(single.uri)) {
+                        this.logger.warn(`prout -> ${single.uri}`)
                         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
-                        //this.albumService.addOneAlbumWithoutTracks(artist, album)
+                        single.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(single.uri)
+                        console.log(single)
+                        this.albumService.addOneAlbumWithoutTracks(artist, single)
                     }
                 })
             }
             //sinon il faut recall spotify
         } 
     }
-
-
-
-
 }
