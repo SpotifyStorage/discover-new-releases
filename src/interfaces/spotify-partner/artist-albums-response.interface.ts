@@ -1,35 +1,24 @@
 export interface ArtistAlbumsResponse {
-    data: Data
-    extensions: Extensions
-  }
-  
-  export interface Data {
-    artistUnion: ArtistUnion
-  }
-  
-  export interface ArtistUnion {
-    __typename: string
-    discography: Discography
-  }
-  
-  export interface Discography {
-    all: All
-  }
-  
-  export interface All {
-    totalCount: number
-    items: Item[]
-  }
-  
-  export interface Item {
-    releases: Releases
-  }
-  
-  export interface Releases {
-    items: Item2[]
-  }
-  
-  export interface Item2 {
+    data: {
+        artistUnion: {
+            __typename: string
+            discography: {
+                all: {
+                    totalCount: number
+                    items: {
+                        releases: {
+                            items: Album[]
+                        }
+                    }[]
+                }
+            }
+        };        
+    };
+    extensions: any
+}
+
+
+interface Album {
     id: string
     uri: string
     name: string
@@ -39,37 +28,34 @@ export interface ArtistAlbumsResponse {
     playability: Playability
     sharingInfo: SharingInfo
     tracks: Tracks
-  }
-  
-  export interface Date {
+}
+
+export interface Date {
     year: number
     isoString: string
     precision: string
-  }
-  
-  export interface CoverArt {
+}
+
+export interface CoverArt {
     sources: Source[]
-  }
-  
-  export interface Source {
+}
+
+export interface Source {
     url: string
     width: number
     height: number
-  }
-  
-  export interface Playability {
+}
+
+export interface Playability {
     playable: boolean
     reason: string
-  }
-  
-  export interface SharingInfo {
+}
+
+export interface SharingInfo {
     shareId: string
     shareUrl: string
-  }
-  
-  export interface Tracks {
+}
+
+export interface Tracks {
     totalCount: number
-  }
-  
-  export interface Extensions {}
-  
+}

@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { HttpException, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { stringify } from 'querystring';
-import { lastValueFrom, map } from 'rxjs';
+import { catchError, lastValueFrom, map } from 'rxjs';
 import { AccessToken } from 'src/interfaces/spotify-partner/access-token.interface';
 import { PartnerTokenDto } from './dto';
 import { ConfigService } from '@nestjs/config';
@@ -37,7 +37,7 @@ export class TokenService implements OnModuleInit {
     }
 
     async getNewPartnerToken(): Promise<AccessToken> {
-        this.logger.verbose('Getting new spotify token')
+        this.logger.verbose('Getting new spotify partner token')
         const url = 'https://open.spotify.com/get_access_token?';
         const payload = {
             reason: "transpost",
@@ -49,7 +49,11 @@ export class TokenService implements OnModuleInit {
                 .pipe(
                     map(
                         axiosRespone => axiosRespone.data
-                    )
+                    ),
+                    catchError( (err) => {
+                        this.logger.error(err.response.data)
+                        throw new HttpException(err.message, err.response.status)
+                    })
                 )
         )
     }
@@ -73,6 +77,8 @@ export class TokenService implements OnModuleInit {
 ////////////////////////
 
     async getNewApiToken(): Promise<Token> {
+        this.logger.verbose('Getting new spotify api token')
+
         const client_id = this.configService.get<string>('SPOTIFY_CLIENT_ID');
         const client_secret = this.configService.get<string>('SPOTIFY_CLIENT_SECRET')
 

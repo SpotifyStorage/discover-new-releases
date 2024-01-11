@@ -101,13 +101,18 @@ export class ArtistService {
             const albumEntity = new AlbumEntity()
             albumEntity.albumUri = album.uri
             albumEntity.name = album.name
+            albumEntity.type = album.type
             albumEntity.tracks = album.tracks.map((track) => {
                 const trackEntity = new TrackDataEntity()
                 trackEntity.name = track.name
                 trackEntity.trackUri = track.uri
                 return trackEntity
             })
-            await this.albumRepository.save(albumEntity)
+            try {
+                await this.albumRepository.save(albumEntity)
+            } catch (err) {
+                this.logger.error(err)
+            }
             return albumEntity
         }))
 
@@ -131,10 +136,20 @@ export class ArtistService {
             select: {artistUri: true, albums: true}, 
             relations: {albums: true},
         })
-        return artistsUri.map(artist => ({
-            artistUri: artist.artistUri,
-            albumCount: artist.albums.length
-        }))
+        
+        return artistsUri.map(artist => {
+            let singleCount = 0, albumCount = 0
+            artist.albums.forEach( (album) => {
+                if (album.type == 'SINGLE') {singleCount++}
+                else if (album.type == 'ALBUM') {albumCount++}
+            })
+            return {
+                artistUri: artist.artistUri,
+                totalCount: artist.albums.length,
+                singleCount: singleCount,
+                albumCount: albumCount,
+            }
+        })
     }
 
     async test(x: any) {

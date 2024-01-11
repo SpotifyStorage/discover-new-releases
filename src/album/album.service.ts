@@ -36,6 +36,7 @@ export class AlbumService {
         albumEntity.albumUri = album.uri
         albumEntity.name = album.name
         albumEntity.artist = artist
+        albumEntity.type = album.type
         albumEntity.tracks = album.tracks.map((track) => {
             const trackEntity = new TrackDataEntity()
             trackEntity.name = track.name

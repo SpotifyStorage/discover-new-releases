@@ -10,6 +10,9 @@ export class AlbumEntity {
   @Column()
   name: string;
 
+  @Column()
+  type: string;       // 'SINGLE' | 'ALBUM' | 'COMPILATION'
+
   @OneToMany(() => TrackDataEntity, (track) => track.album, {
     cascade: true
   })

@@ -48,15 +48,17 @@ export class DiscoverService {
                 singles: {
                     totalCount: overview.data.artistUnion.discography.singles.totalCount,
                     items: overview.data.artistUnion.discography.singles.items.map( (single) => ({
-                        uri: single.releases.items[0].uri,
+                        uri: single.releases.items[0].id,
                         name: single.releases.items[0].name,
+                        type: '',
                     })),
                 },
                 albums: {
                     totalCount: overview.data.artistUnion.discography.albums.totalCount,
                     items: overview.data.artistUnion.discography.albums.items.map( (album) => ({
-                        uri: album.releases.items[0].uri,
+                        uri: album.releases.items[0].id,
                         name: album.releases.items[0].name,
+                        type: '',
                     })),
                 },
             }
@@ -69,7 +71,7 @@ export class DiscoverService {
             this.logger.verbose(`Received a messages from the artist queue containing ${message.body.length} albums`)
             message.body.forEach(async artist => {
                 const artistStat = await this.getArtistDailyStats(artist)
-                this.checkForMissingAlbums(artist, artistStat)
+                await this.checkForMissingAlbums(artist, artistStat)
                 //this.artistStatQueueService.sendMessages([artistStat])
             })
         })
@@ -77,11 +79,11 @@ export class DiscoverService {
 
     
     checkForMissingAlbums(artist: MinimalArtist, artistStat: ArtistStatPreQueue) {
-        if (artistStat.albumCount > artist.albumCount) {
-            this.logger.verbose(`Must add ${artistStat.albumCount - artist.albumCount} album(s) to the db for '${artist.artistUri}'`)
+        if (artistStat.albumCount > artist.totalCount) {
+            this.logger.verbose(`Must add ${artistStat.albumCount - artist.totalCount} album(s) to the db for '${artist.artistUri}'`)
             
-            if (artistStat.discography.albums.totalCount <= 10) {
-                this.logger.verbose('Can add an album from the data.')
+            if (artistStat.discography.albums.totalCount <= 10 && artistStat.discography.albums.totalCount > artist.albumCount) {
+                this.logger.warn('Can add an album from the data.')
                 artistStat.discography.albums.items.forEach( async (album) => {
                     if (! await this.albumService.findOneAlbumByUri(album.uri)) {
                         this.logger.warn(`ehlalalla -> ${album.uri}`)
@@ -91,8 +93,9 @@ export class DiscoverService {
                         this.albumService.addOneAlbumWithoutTracks(artist, album)
                     }
                 })
-            } else if (artistStat.discography.singles.totalCount <= 10) {
-                this.logger.verbose('Can add a single from the data.')
+            }
+            if (artistStat.discography.singles.totalCount <= 10 && artistStat.discography.singles.totalCount > artist.singleCount) {
+                this.logger.warn('Can add a single from the data.')
                 artistStat.discography.singles.items.forEach( async (single) => {
                     if (! await this.albumService.findOneAlbumByUri(single.uri)) {
                         this.logger.warn(`prout -> ${single.uri}`)

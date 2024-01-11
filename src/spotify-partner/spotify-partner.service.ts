@@ -123,10 +123,17 @@ export class SpotifyPartnerService {
         const artistAlbumsData = await this.getArtistAlbums(artistUri)
         
         try {
-            return artistAlbumsData.data.artistUnion.discography.all.items.map(album => ({
-                uri: album.releases.items[0].id,
-                name: album.releases.items[0].name
-            }))
+            let listOfAlbums: AlbumDto[] = []
+            artistAlbumsData.data.artistUnion.discography.all.items.map(album => {
+                album.releases.items.forEach( (release) => {
+                    listOfAlbums.push({
+                        uri: album.releases.items[0].id,
+                        name: album.releases.items[0].name,
+                        type: album.releases.items[0].type,
+                    })
+                })
+            })
+            return listOfAlbums
         } catch {
             this.logger.error('Invalid response from spotify-partner getArtist endpoint, artistUri is probably wrong')
         }
