@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany, JoinColumn, ManyToOne } from 'typeorm';
 import { ArtistDataEntity } from './artist-data.entity';
 import { TrackDataEntity } from './track-data.entity';
 
@@ -18,8 +18,9 @@ export class AlbumEntity {
   })
   tracks: TrackDataEntity[]
 
-  @ManyToOne(() => ArtistDataEntity, (artist) => artist.albums, {
+  @ManyToMany(() => ArtistDataEntity, (artist) => artist.albums, {
     onDelete: 'CASCADE'
   })
-  artist: ArtistDataEntity
+  @JoinColumn({name: "artist_uri"})
+  artists: ArtistDataEntity[]
 }

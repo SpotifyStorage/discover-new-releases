@@ -13,9 +13,9 @@ export class AddArtistStats1703972020611 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "track_data" ADD CONSTRAINT "FK_ca1eca98694669d4d646cda1b39" FOREIGN KEY ("album_uri") REFERENCES "album"("album_uri") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "album" ADD CONSTRAINT "FK_a60e7d037d4dce10eb3a016f631" FOREIGN KEY ("artistArtistUri") REFERENCES "artist_data"("artist_uri") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "artist_stats" ADD CONSTRAINT "FK_a318ca696b744f767f3b008a754" FOREIGN KEY ("artist_uri") REFERENCES "artist_data"("artist_uri") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        //await queryRunner.query(`DROP TABLE "artist"`);
-        //await queryRunner.query(`DROP TABLE "track"`);
-        //await queryRunner.query(`DROP TABLE "playcount"`);
+        await queryRunner.query(`DROP TABLE "playcount"`);
+        await queryRunner.query(`DROP TABLE "track"`);
+        await queryRunner.query(`DROP TABLE "artist"`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
