@@ -109,7 +109,13 @@ export class ArtistService {
                 return trackEntity
             })
             try {
-                await this.albumRepository.save(albumEntity)
+                await this.dataSource.createQueryBuilder()
+                    .insert()
+                    .into(AlbumEntity)
+                    .values(albumEntity)
+                    .orUpdate(['album_uri', 'name', 'type', 'tracks', 'artists'])
+                    .execute();
+                //await this.albumRepository.save(albumEntity)
             } catch (err) {
                 this.logger.error(err)
             }

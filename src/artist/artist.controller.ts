@@ -44,7 +44,7 @@ export class ArtistController {
         return this.artistService.findAllArtistsUri()
     }
 
-    @Get(':id')
+    @Get(':artistId')
     @ApiQuery({ name: 'artistId' })
     @ApiOperation({ summary: "Get data from the database of an artist with their albums and trakcs" })
     async findArtist(@Query('artistId') artistUri) {
@@ -82,7 +82,7 @@ export class ArtistController {
         }
     }
 
-    @Post(':id')
+    @Post(':artistId')
     @ApiQuery({ name: 'artistId' })
     @ApiOperation({ summary: "Add one artist with all it's albums and their tracks to the database" })
     async addOneArtistByUri(@Query('artistId') artistUri): Promise<ResponseDto<ArtistDataEntity>> {
