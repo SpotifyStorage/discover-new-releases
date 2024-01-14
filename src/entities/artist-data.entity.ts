@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany, JoinTable, JoinColumn } from 'typeorm';
 import { AlbumEntity } from './album.entity';
 import { ArtistStatsEntity } from './artist-stats.entity';
 
@@ -10,22 +10,22 @@ export class ArtistDataEntity {
     @Column()
     name: string;
 
-    @ManyToMany(() => AlbumEntity, (album) => album.artists)
-    @JoinTable({
-        name: "artist_albums",
+    @ManyToMany(() => AlbumEntity, (album) => album.artists, {
+        cascade: true //, eager: true
     })
-    //@OneToMany(() => AlbumEntity, (album) => album.artists)
-    // {
-    //     name: "artist_albums",
-    //     joinColumn: {
-    //         name: "artist",
-    //         referencedColumnName: "artist_uri"
-    //     },
-    //     inverseJoinColumn: {
-    //         name: "album",
-    //         referencedColumnName: "album_uri"
-    //     }
-    // }
+    @JoinTable({
+        name: "artist_album",
+        joinColumn: {
+            name: "artist_uri",
+            referencedColumnName: "artistUri",
+            foreignKeyConstraintName: "FK_artist_uri"
+        },
+        inverseJoinColumn: {
+            name: "album_uri",
+            referencedColumnName: "albumUri",
+            foreignKeyConstraintName: "FK_album_uri"
+        }
+    })
     albums: AlbumEntity[]
 
     @OneToMany(() => ArtistStatsEntity, (artistStats) => artistStats.follower)

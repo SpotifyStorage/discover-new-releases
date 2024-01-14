@@ -5,7 +5,6 @@ import { ArtistDataEntity } from 'src/entities/artist-data.entity';
 import { TrackDataEntity } from 'src/entities/track-data.entity';
 import { Artist } from 'src/interfaces/spotify-api/artist.interface';
 import { SpotifyApiService } from 'src/spotify-api/spotify-api.service';
-import { ArtistDto } from 'src/spotify-partner/dto';
 import { artistToEntity } from 'src/utilities/artist.utilities';
 import { DataSource, In, Like, Repository } from 'typeorm';
 import { ArtistsUriDto } from './dto/artists-uri.dto';
@@ -20,6 +19,9 @@ export class ArtistService {
 
         @InjectRepository(AlbumEntity)
         private albumRepository: Repository<AlbumEntity>,
+
+        //@InjectRepository(TrackDataEntity)
+        //private trackRepository: Repository<TrackDataEntity>,
         
         private dataSource: DataSource,
         private readonly spotifyApiService: SpotifyApiService,
@@ -93,7 +95,7 @@ export class ArtistService {
         for (var album of artistData.albums) {
             album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
         }
-
+        
         artistEntity.artistUri = artistData.uri
         artistEntity.name = artistData.name
         artistEntity.albums = await Promise.all(artistData.albums.map(async (album) => {
@@ -106,23 +108,28 @@ export class ArtistService {
                 const trackEntity = new TrackDataEntity()
                 trackEntity.name = track.name
                 trackEntity.trackUri = track.uri
+                
                 return trackEntity
             })
             try {
-                await this.dataSource.createQueryBuilder()
-                    .insert()
-                    .into(AlbumEntity)
-                    .values(albumEntity)
-                    .orUpdate(['album_uri', 'name', 'type', 'tracks', 'artists'])
-                    .execute();
-                //await this.albumRepository.save(albumEntity)
+                // await this.dataSource.createQueryBuilder()
+                //     .insert()
+                //     .into(AlbumEntity)
+                //     .values(albumEntity)
+                //     .orUpdate(['album_uri', 'name', 'type', 'tracks', 'artists'])
+                //     .execute();
+                await this.albumRepository.save(albumEntity)
             } catch (err) {
                 this.logger.error(err)
             }
             return albumEntity
         }))
 
-        await this.artistDataRepository.save(artistEntity)
+        try {
+            await this.artistDataRepository.save(artistEntity)
+        } catch (err) {
+            this.logger.error(err)
+        }
 
         return this.findOneArtistByArtistUri(artistData.uri)
     }

@@ -59,7 +59,8 @@ export class TokenService implements OnModuleInit {
     }
 
     isPartnerTokenActive(): Boolean {
-        if (Date.now() > this.activePartnerToken.accessTokenExpirationTimestampMs) {
+        const tokenExpiration = this.activePartnerToken.accessTokenExpirationTimestampMs
+        if (Date.now() > tokenExpiration || !tokenExpiration) {
             return false
         }
         return true
@@ -101,7 +102,8 @@ export class TokenService implements OnModuleInit {
     }
 
     isApiTokenActive(): Boolean {
-        if (Date.now() > this.activeApiToken.expires_in) {
+        const tokenExpiration = this.activeApiToken.expires_in
+        if (Date.now() > tokenExpiration || !tokenExpiration) {
             return false
         }
         return true

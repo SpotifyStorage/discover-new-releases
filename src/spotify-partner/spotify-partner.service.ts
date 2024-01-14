@@ -11,11 +11,11 @@ import { ArtistAlbumsResponse } from 'src/interfaces/spotify-partner/artist-albu
 @Injectable()
 export class SpotifyPartnerService {
     logger = new Logger(SpotifyPartnerService.name)
-    
+
     constructor(
         private readonly httpService: HttpService,
         private readonly tokenService: TokenService
-    ) {}
+    ) { }
 
     async getValidHeader() {
         return {
@@ -30,27 +30,27 @@ export class SpotifyPartnerService {
         }
     }
     async getArtistData(artistUri: string, logger: boolean = true): Promise<ArtistResponse> {
-        
+
         logger ? this.logger.verbose(`Calling spotify API for artist data of '${artistUri}'`) : null;
-    
+
         const payload = {
-          'operationName': 'queryArtistOverview',
-          'variables': JSON.stringify({
-              "uri": `spotify:artist:${artistUri}`,
-              "locale": "",
-              "includePrerelease": true
-          }),
-          'extensions': JSON.stringify({
-              "persistedQuery": {
-                  "version": 1,
-                  "sha256Hash": "35648a112beb1794e39ab931365f6ae4a8d45e65396d641eeda94e4003d41497"
-              }
-          })
+            'operationName': 'queryArtistOverview',
+            'variables': JSON.stringify({
+                "uri": `spotify:artist:${artistUri}`,
+                "locale": "",
+                "includePrerelease": true
+            }),
+            'extensions': JSON.stringify({
+                "persistedQuery": {
+                    "version": 1,
+                    "sha256Hash": "35648a112beb1794e39ab931365f6ae4a8d45e65396d641eeda94e4003d41497"
+                }
+            })
         }
-    
+
         return lastValueFrom(
             this.httpService
-                .get<ArtistResponse>('https://api-partner.spotify.com/pathfinder/v1/query?' + stringify(payload), {headers: await this.getValidHeader()})
+                .get<ArtistResponse>('https://api-partner.spotify.com/pathfinder/v1/query?' + stringify(payload), { headers: await this.getValidHeader() })
                 .pipe(
                     map(
                         axiosResponse => axiosResponse.data
@@ -65,7 +65,7 @@ export class SpotifyPartnerService {
         )
     }
 
-    async getArtistAlbums(artistUri: string): Promise<ArtistAlbumsResponse> {
+    async getAlbumsFromArtist(artistUri: string, offset: number = 0): Promise<ArtistAlbumsResponse> {
 
         this.logger.verbose("Calling spotify API for artist's albums")
 
@@ -73,7 +73,7 @@ export class SpotifyPartnerService {
             'operationName': 'queryArtistDiscographyAll',
             'variables': JSON.stringify({
                 "uri": `spotify:artist:${artistUri}`,
-                "offset": 0,
+                "offset": offset,
                 "limit": 115 //TODO: check if totalcount is greater then 115 (115 is the limit, otherwise their is an error thrown by the spotify api)
             }),
             'extensions': JSON.stringify({
@@ -82,20 +82,39 @@ export class SpotifyPartnerService {
                     "sha256Hash": "3f1c940cde61596bf4f534e5a736e6fac24d2a792cc81852820e20a93863a2b5"
                 }
             })
-          }
-      
-          return lastValueFrom(
-              this.httpService
-                  .get<ArtistAlbumsResponse>('https://api-partner.spotify.com/pathfinder/v1/query?' + stringify(payload), {headers: await this.getValidHeader()})
-                  .pipe(
-                      map(
-                          axiosResponse => axiosResponse.data
-                      )
-                  )
-          )
+        }
+
+        const albums = await lastValueFrom(
+            this.httpService
+                .get<ArtistAlbumsResponse>('https://api-partner.spotify.com/pathfinder/v1/query?' + stringify(payload), { headers: await this.getValidHeader() })
+                .pipe(
+                    map(
+                        axiosResponse => axiosResponse.data
+                    )
+                )
+        )
+
+        if (albums.data.artistUnion.discography.all.totalCount > 115) {}
+        return albums
     }
 
-    
+    async getAllAlbumsFromArtist(artistUri: string): Promise<ArtistAlbumsResponse> {
+        let firstAlbums = await this.getAlbumsFromArtist(artistUri, 0)
+        const totalCount = firstAlbums.data.artistUnion.discography.all.totalCount
+
+        if (totalCount > 115) {
+            const quotient = ~~((totalCount - 1) / 115)
+            for (let i = 0; i < quotient; i++) {
+                const otherAlbums = await this.getAlbumsFromArtist(artistUri, 115 * (i + 1))
+                otherAlbums.data.artistUnion.discography.all.items.forEach( (item) => 
+                    firstAlbums.data.artistUnion.discography.all.items.push(item)
+                )
+            }
+        }
+        return firstAlbums
+    }
+
+
 
     async getArtistDataDto(artistUri: string): Promise<ArtistDto> {
         const artistData = await this.getArtistData(artistUri)
@@ -107,7 +126,7 @@ export class SpotifyPartnerService {
                 follower: artistData.data.artistUnion.stats.followers,
                 monthlyListener: artistData.data.artistUnion.stats.monthlyListeners,
                 worldRank: artistData.data.artistUnion.stats.worldRank,
-                albums: await this.getArtistAlbumsDto(artistUri)
+                albums: await this.getAllAlbumsDtoFromArtist(artistUri)
                 // albums: artistData.data.artistUnion.discography.popularReleasesAlbums.items.map(x => ({
                 //     name: x.name,
                 //     uri: x.id
@@ -118,28 +137,52 @@ export class SpotifyPartnerService {
         }
     }
 
-    async getArtistAlbumsDto(artistUri: string): Promise<AlbumDto[]> {
-        
-        const artistAlbumsData = await this.getArtistAlbums(artistUri)
-        
+    async getAllAlbumsDtoFromArtist(artistUri: string): Promise<AlbumDto[]> {
+
+        const artistAlbumsData = await this.getAllAlbumsFromArtist(artistUri)
+        console.log(artistAlbumsData.data.artistUnion.discography.all.totalCount, artistAlbumsData.data.artistUnion.discography.all.items.length)
+
         try {
-            let listOfAlbums: AlbumDto[] = []
+            //let listOfAlbums: AlbumDto[] = []
+            const listOfAlbums = new SetWithComplexObject<AlbumDto>(album => album.uri);
             artistAlbumsData.data.artistUnion.discography.all.items.map(album => {
-                album.releases.items.forEach( (release) => {
-                    listOfAlbums.push({
+                album.releases.items.forEach((release) => {
+                    listOfAlbums.add({
                         uri: album.releases.items[0].id,
                         name: album.releases.items[0].name,
                         type: album.releases.items[0].type,
                     })
                 })
             })
-            return listOfAlbums
+            return listOfAlbums.values()
         } catch {
             this.logger.error('Invalid response from spotify-partner getArtist endpoint, artistUri is probably wrong')
         }
     }
 }
 
+class SetWithComplexObject<T> {
+    private items: T[] = [];
+    private getKey: (item: T) => string;
 
+    constructor(getKey: (item: T) => string) {
+        this.getKey = getKey;
+    }
+
+    add(item: T): void {
+        const key = this.getKey(item);
+        if (!this.items.some(existing => this.getKey(existing) === key)) {
+            this.items.push(item);
+        }
+    }
+
+    has(item: T): boolean {
+        return this.items.some(existing => this.getKey(existing) === this.getKey(item));
+    }
+
+    values(): T[] {
+        return [...this.items];
+    }
+}
 
 //.data.artistUnion.discography.all.items.map()

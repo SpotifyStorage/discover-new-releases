@@ -13,7 +13,6 @@ export class ArtistController {
     private readonly logger = new Logger(ArtistController.name);
 
     constructor(
-
         private readonly artistService: ArtistService,
         private readonly spotifyPartnerService: SpotifyPartnerService,
         private readonly spotifyApiService: SpotifyApiService

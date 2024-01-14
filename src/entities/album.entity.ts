@@ -4,23 +4,22 @@ import { TrackDataEntity } from './track-data.entity';
 
 @Entity({ name: 'album' })
 export class AlbumEntity {
-  @PrimaryColumn({name: "album_uri"})
-  albumUri: string;
+    @PrimaryColumn({ name: "album_uri" })
+    albumUri: string;
 
-  @Column()
-  name: string;
+    @Column()
+    name: string;
 
-  @Column()
-  type: string;       // 'SINGLE' | 'ALBUM' | 'COMPILATION'
+    @Column()
+    type: string;       // 'SINGLE' | 'ALBUM' | 'COMPILATION' | 'EP'
 
-  @OneToMany(() => TrackDataEntity, (track) => track.album, {
-    cascade: true
-  })
-  tracks: TrackDataEntity[]
+    @OneToMany(() => TrackDataEntity, (track) => track.album, {
+        cascade: true
+    })
+    tracks: TrackDataEntity[]
 
-  @ManyToMany(() => ArtistDataEntity, (artist) => artist.albums, {
-    onDelete: 'CASCADE'
-  })
-  @JoinColumn({name: "artist_uri"})
-  artists: ArtistDataEntity[]
+    @ManyToMany(() => ArtistDataEntity, (artist) => artist.albums, {
+        onDelete: 'CASCADE', onUpdate: 'CASCADE'
+    })
+    artists: ArtistDataEntity[]
 }
