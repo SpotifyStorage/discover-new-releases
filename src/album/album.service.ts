@@ -31,11 +31,13 @@ export class AlbumService {
     }
 
     async addOneAlbumWithoutTracks(artist: ArtistDataEntity, album: AlbumDto) {
+        console.log(album)
         this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
         const albumEntity = new AlbumEntity()
         albumEntity.albumUri = album.uri
         albumEntity.name = album.name
-        albumEntity.artists.push(artist)
+        albumEntity.artists = [artist]
+        //albumEntity.artists.push(artist)
         //albumEntity.name = artist.name
         albumEntity.type = album.type
         albumEntity.tracks = album.tracks.map((track) => {

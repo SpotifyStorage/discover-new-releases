@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Logger, Post, Query } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { SpotifyApiService } from 'src/spotify-api/spotify-api.service';
@@ -20,6 +20,8 @@ export class AlbumController {
         this.logger.verbose('Get all albums in the DB controller called')
         return this.albumService.findAllAlbumsUri()
     }
+
+
 
     // @ApiQuery({ name: 'artist'})
     // @Get('add_by_artist')

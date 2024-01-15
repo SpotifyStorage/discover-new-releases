@@ -7,6 +7,7 @@ import { TokenService } from 'src/token/token.service';
 import { ArtistDto } from './dto';
 import { AlbumDto } from './dto/album.dto';
 import { ArtistAlbumsResponse } from 'src/interfaces/spotify-partner/artist-albums-response.interface';
+import { AlbumResponse } from './interface/album-response.interface';
 
 @Injectable()
 export class SpotifyPartnerService {
@@ -127,10 +128,6 @@ export class SpotifyPartnerService {
                 monthlyListener: artistData.data.artistUnion.stats.monthlyListeners,
                 worldRank: artistData.data.artistUnion.stats.worldRank,
                 albums: await this.getAllAlbumsDtoFromArtist(artistUri)
-                // albums: artistData.data.artistUnion.discography.popularReleasesAlbums.items.map(x => ({
-                //     name: x.name,
-                //     uri: x.id
-                // }))
             }
         } catch {
             this.logger.error('Invalid response from spotify-partner getArtist endpoint, artistUri is probably wrong')
@@ -157,6 +154,51 @@ export class SpotifyPartnerService {
             return listOfAlbums.values()
         } catch {
             this.logger.error('Invalid response from spotify-partner getArtist endpoint, artistUri is probably wrong')
+        }
+    }
+
+    async getOneAlbumFromAlbumUri(albumUri: string) {
+        this.logger.verbose(`Calling spotify partner for the following album '${albumUri}'`)
+        const payload = {
+            'operationName': 'getAlbum',
+            'variables': JSON.stringify({
+                "uri": `spotify:album:${albumUri}`,
+                "locale": "",
+                "offset": 0,
+                "limit": 50
+            }),
+            'extensions': JSON.stringify({
+                "persistedQuery": {
+                    "version": 1,
+                    "sha256Hash": "46ae954ef2d2fe7732b4b2b4022157b2e18b7ea84f70591ceb164e4de1b5d5d3"
+                }
+            })
+        }
+
+        return lastValueFrom(
+            this.httpService
+                .get<AlbumResponse>('https://api-partner.spotify.com/pathfinder/v1/query?' + stringify(payload), { headers: await this.getValidHeader() })
+                .pipe(
+                    map(
+                        axiosResponse => axiosResponse.data
+                    ),
+                    catchError(
+                        error => {
+                            this.logger.error(error.message)
+                            throw new HttpException(error.message, error.response.status)
+                        }
+                    )
+                )
+        )
+    }
+
+    async getOneAlbumDtoFromAlbumUri(albumUri: string): Promise<AlbumDto> {
+        const albumData = await this.getOneAlbumFromAlbumUri(albumUri)
+
+        return {
+            uri: albumUri,
+            name: albumData.data.albumUnion.name,
+            type: albumData.data.albumUnion.type,
         }
     }
 }

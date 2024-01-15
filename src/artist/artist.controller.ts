@@ -6,6 +6,7 @@ import { ResponseDto } from 'src/interfaces/dto/response.dto';
 import { ArtistDataEntity } from 'src/entities/artist-data.entity';
 import { ArtistsUriDto } from './dto/artists-uri.dto';
 import { SpotifyPartnerService } from 'src/spotify-partner/spotify-partner.service';
+import { AlbumService } from 'src/album/album.service';
 
 @ApiTags('Artist')
 @Controller('artist')
@@ -14,6 +15,7 @@ export class ArtistController {
 
     constructor(
         private readonly artistService: ArtistService,
+        private readonly albumService: AlbumService,
         private readonly spotifyPartnerService: SpotifyPartnerService,
         private readonly spotifyApiService: SpotifyApiService
     ) { }
@@ -51,7 +53,17 @@ export class ArtistController {
         return await this.artistService.findOneArtist(artistUri)
     }
 
-
+    @Post('album')
+    @ApiQuery({ name: 'albumId' })
+    @ApiQuery({ name: 'artistId' })
+    @ApiOperation({ summary: "Add a specific album to the database" })
+    async appendOneAlbum(@Query('albumId') albumId, @Query('artistId') artistId) {
+        this.logger.verbose('Add all albums by artist controller called');
+        const artist = await this.artistService.findOneArtistByArtistUri(artistId)
+        const albumDto = await this.spotifyPartnerService.getOneAlbumDtoFromAlbumUri(albumId)
+        albumDto.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(albumId)
+        return this.albumService.addOneAlbumWithoutTracks(artist, albumDto)
+    }
 
     @Post('playlist')
     @ApiQuery({ name: 'playlistId' })
