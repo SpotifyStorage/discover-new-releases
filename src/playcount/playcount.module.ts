@@ -20,4 +20,4 @@ import { PlaycountArtistController } from './playcount-artist.controller';
   providers: [PlaycountService],
   exports: [PlaycountService]
 })
-export class PlaycountModule {}
+export class PlaycountModule { }

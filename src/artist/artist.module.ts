@@ -10,15 +10,15 @@ import { TrackModule } from 'src/track/track.module';
 import { AlbumEntity } from 'src/entities/album.entity';
 
 @Module({
-  imports: [
-    SpotifyApiModule,
-    SpotifyPartnerModule,
-    AlbumModule,
-    TrackModule,
-    TypeOrmModule.forFeature([ArtistDataEntity, AlbumEntity])
-  ],
-  providers: [ArtistService],
-  controllers: [ArtistController],
-  exports: [ArtistService]
+    imports: [
+        SpotifyApiModule,
+        SpotifyPartnerModule,
+        AlbumModule,
+        TrackModule,
+        TypeOrmModule.forFeature([ArtistDataEntity, AlbumEntity])
+    ],
+    providers: [ArtistService],
+    controllers: [ArtistController],
+    exports: [ArtistService]
 })
-export class ArtistModule {}
+export class ArtistModule { }

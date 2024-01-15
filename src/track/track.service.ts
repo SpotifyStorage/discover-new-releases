@@ -9,7 +9,7 @@ export class TrackService {
     constructor(
         @InjectRepository(TrackDataEntity)
         private tracksRepository: Repository<TrackDataEntity>
-      ) {}
+    ) { }
 
     private readonly logger = new Logger(TrackService.name);
 

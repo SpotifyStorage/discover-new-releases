@@ -21,12 +21,12 @@ export class DiscoverService {
         private readonly artistQueueService: ArtistQueueService,
         private readonly artistService: ArtistService,
         private readonly albumService: AlbumService,
-    ) {}
+    ) { }
 
     async populateQueueWithArtistsUriAndAlbumcount(listOfArtists: MinimalArtist[]): Promise<MinimalArtist[]> {
         this.logger.verbose(`Populating the artist queue with ${listOfArtists.length} artists`)
         let newListOfArtists: MinimalArtist[] = []
-        listOfArtists.forEach( (artist) => {
+        listOfArtists.forEach((artist) => {
             this.artistQueueService.sendMessages([artist])
             newListOfArtists.push(artist)
         })
@@ -47,7 +47,7 @@ export class DiscoverService {
             discography: {
                 singles: {
                     totalCount: overview.data.artistUnion.discography.singles.totalCount,
-                    items: overview.data.artistUnion.discography.singles.items.map( (single) => ({
+                    items: overview.data.artistUnion.discography.singles.items.map((single) => ({
                         uri: single.releases.items[0].id,
                         name: single.releases.items[0].name,
                         type: '',
@@ -55,7 +55,7 @@ export class DiscoverService {
                 },
                 albums: {
                     totalCount: overview.data.artistUnion.discography.albums.totalCount,
-                    items: overview.data.artistUnion.discography.albums.items.map( (album) => ({
+                    items: overview.data.artistUnion.discography.albums.items.map((album) => ({
                         uri: album.releases.items[0].id,
                         name: album.releases.items[0].name,
                         type: '',
@@ -77,7 +77,7 @@ export class DiscoverService {
         })
     }
 
-    
+
     checkForMissingAlbums(artist: MinimalArtist, artistStat: ArtistStatPreQueue) {
         let numOfAlbumsToAdd = artistStat.albumCount - artist.totalCount
 
@@ -86,7 +86,7 @@ export class DiscoverService {
 
             if (artistStat.discography.albums.totalCount <= 10 && artistStat.discography.albums.totalCount > artist.albumCount) {
                 this.logger.warn('Can add an album from the data.')
-                artistStat.discography.albums.items.forEach( async (album) => {
+                artistStat.discography.albums.items.forEach(async (album) => {
                     if (! await this.albumService.findOneAlbumByUri(album.uri)) {
                         this.logger.warn(`ehlalalla -> ${album.uri}`)
                         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
@@ -99,7 +99,7 @@ export class DiscoverService {
             }
             if (artistStat.discography.singles.totalCount <= 10 && artistStat.discography.singles.totalCount > artist.singleCount) {
                 this.logger.warn('Can add a single from the data.')
-                artistStat.discography.singles.items.forEach( async (single) => {
+                artistStat.discography.singles.items.forEach(async (single) => {
                     const currentDbAlbum = await this.albumService.findOneAlbumByUri(single.uri)
                     if (!currentDbAlbum) {
                         console.log('oki')
@@ -115,6 +115,6 @@ export class DiscoverService {
             if (numOfAlbumsToAdd >= 1) {
                 console.log(numOfAlbumsToAdd)
             }
-        } 
+        }
     }
 }

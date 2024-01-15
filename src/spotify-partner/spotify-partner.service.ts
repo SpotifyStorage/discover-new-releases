@@ -94,7 +94,7 @@ export class SpotifyPartnerService {
                 )
         )
 
-        if (albums.data.artistUnion.discography.all.totalCount > 115) {}
+        if (albums.data.artistUnion.discography.all.totalCount > 115) { }
         return albums
     }
 
@@ -106,7 +106,7 @@ export class SpotifyPartnerService {
             const quotient = ~~((totalCount - 1) / 115)
             for (let i = 0; i < quotient; i++) {
                 const otherAlbums = await this.getAlbumsFromArtist(artistUri, 115 * (i + 1))
-                otherAlbums.data.artistUnion.discography.all.items.forEach( (item) => 
+                otherAlbums.data.artistUnion.discography.all.items.forEach((item) =>
                     firstAlbums.data.artistUnion.discography.all.items.push(item)
                 )
             }

@@ -9,7 +9,7 @@ import { MinimalArtist } from 'src/queues/interface/artist-minimal.interface';
 export class DiscoverController {
 
     logger = new Logger(DiscoverController.name)
-    
+
     constructor(
         private readonly artistService: ArtistService,
         private readonly discoverService: DiscoverService,

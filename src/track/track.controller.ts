@@ -6,16 +6,16 @@ import { ApiQuery, ApiTags } from '@nestjs/swagger';
 @Controller('track')
 export class TrackController {
     constructor(
-      private readonly trackService: TrackService,
-    ) {}
+        private readonly trackService: TrackService,
+    ) { }
 
     logger = new Logger(TrackController.name)
 
-    @ApiQuery({ name: 'track_id'})
+    @ApiQuery({ name: 'track_id' })
     @Get('')
     async findOneTrack(@Query('track_id') trackUri) {
-      this.logger.verbose('Find one track by ID controller called')
-      return await this.trackService.findOneTrackByTrackUri(trackUri)
+        this.logger.verbose('Find one track by ID controller called')
+        return await this.trackService.findOneTrackByTrackUri(trackUri)
     }
 
 

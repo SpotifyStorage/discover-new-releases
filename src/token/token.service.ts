@@ -11,13 +11,13 @@ import { Token } from 'src/interfaces/spotify-api/token.interface';
 export class TokenService implements OnModuleInit {
 
     logger = new Logger(TokenService.name)
-    
+
     constructor(
         private readonly httpService: HttpService,
         private readonly configService: ConfigService
-    ) {}
-    
-    
+    ) { }
+
+
     activePartnerToken = {
         clientId: '',
         accessToken: '',
@@ -29,7 +29,7 @@ export class TokenService implements OnModuleInit {
         access_token: '',
         token_type: 'Bearer',
         expires_in: Date.now()
-      };
+    };
 
     async onModuleInit() {
         this.activePartnerToken = await this.getNewPartnerToken();
@@ -50,7 +50,7 @@ export class TokenService implements OnModuleInit {
                     map(
                         axiosRespone => axiosRespone.data
                     ),
-                    catchError( (err) => {
+                    catchError((err) => {
                         this.logger.error(err.response.data)
                         throw new HttpException(err.message, err.response.status)
                     })
@@ -75,7 +75,7 @@ export class TokenService implements OnModuleInit {
     }
 
 
-////////////////////////
+    ////////////////////////
 
     async getNewApiToken(): Promise<Token> {
         this.logger.verbose('Getting new spotify api token')
@@ -97,7 +97,7 @@ export class TokenService implements OnModuleInit {
         const expirationTime = Date.now() + response.expires_in * 1000;
 
         response.expires_in = expirationTime;
-        
+
         return response
     }
 
@@ -111,7 +111,7 @@ export class TokenService implements OnModuleInit {
 
     async getValidApiToken() {
         if (!this.isApiTokenActive()) {
-        return this.getNewApiToken()        // christophe est pas trop confiant ici mais avait finalement raison
+            return this.getNewApiToken()        // christophe est pas trop confiant ici mais avait finalement raison
         }
         return this.activeApiToken
     }

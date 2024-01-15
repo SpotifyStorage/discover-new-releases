@@ -10,15 +10,15 @@ export class AlbumController {
     constructor(
         private readonly albumService: AlbumService,
         private readonly spotifyService: SpotifyApiService,
-    ) {}
+    ) { }
 
     logger = new Logger(AlbumController.name)
 
     @Get('all')
-    @ApiOperation({summary: "Get a list of all the albums in the database"})
+    @ApiOperation({ summary: "Get a list of all the albums in the database" })
     findAllAlbums(): Promise<AlbumEntity[]> {
-      this.logger.verbose('Get all albums in the DB controller called')
-      return this.albumService.findAllAlbumsUri()
+        this.logger.verbose('Get all albums in the DB controller called')
+        return this.albumService.findAllAlbumsUri()
     }
 
     // @ApiQuery({ name: 'artist'})

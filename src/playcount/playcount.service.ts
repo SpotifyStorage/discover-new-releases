@@ -17,16 +17,16 @@ export class PlaycountService {
 
         private readonly trackService: TrackService,
         private dataSource: DataSource
-    ) {}
+    ) { }
 
     async findPlaycountsByTrackUri(trackUri: string): Promise<ResponseDto<PlaycountDto[]>> {
-        
+
         const trackObject = await this.trackService.findOneTrackByTrackUri(trackUri);
 
         if (trackObject) {
             this.logger.verbose(`Searching playcount data in the DB for the following track '${trackUri}'`)
             const playcountsData = await this.playcountRepository.find({
-                where: {track: trackObject}
+                where: { track: trackObject }
             })
             return {
                 status: 'success',
@@ -39,21 +39,21 @@ export class PlaycountService {
         }
 
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
-        
+
         return {
             status: 'failed'
         }
     }
 
     async findLatestPlaycountByTrackUri(trackUri: string): Promise<ResponseDto<PlaycountDto>> {
-        
+
         const trackObject = await this.trackService.findOneTrackByTrackUri(trackUri);
 
         if (trackObject) {
             this.logger.verbose(`Searching latest playcount data in the DB for the following track '${trackUri}'`)
             const playcountData = await this.playcountRepository.findOne({
-                where: {track: trackObject}, 
-                order: {date: 'DESC'}
+                where: { track: trackObject },
+                order: { date: 'DESC' }
             })
             return {
                 status: 'success',
@@ -66,14 +66,14 @@ export class PlaycountService {
         }
 
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
-        
+
         return {
             status: 'failed'
         }
     }
 
     async findOnePlaycountByDateAndTrackUri(trackUri: string, date: string | number): Promise<ResponseDto<PlaycountDto>> {
-        
+
         const trackObject = await this.trackService.findOneTrackByTrackUri(trackUri);
         const dateBeginning = new Date(date)
         const dateEnd = new Date(dateBeginning.getTime() + 86400000)
@@ -81,7 +81,7 @@ export class PlaycountService {
         if (trackObject) {
             this.logger.verbose(`Searching playcount in the DB for the following track '${trackUri}' from ${date}`)
             const playcountData = await this.playcountRepository.findOneBy({
-                track: trackObject, 
+                track: trackObject,
                 date: Between(dateBeginning.getTime(), dateEnd.getTime())
             })
             return {
@@ -95,14 +95,14 @@ export class PlaycountService {
         }
 
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
-        
+
         return {
             status: 'failed'
         }
     }
 
-    async findPlaycountsByDatesAndTrackUri(trackUri: string, date: {start: string, end: string}): Promise<ResponseDto<PlaycountDto[] | string>> {
-        
+    async findPlaycountsByDatesAndTrackUri(trackUri: string, date: { start: string, end: string }): Promise<ResponseDto<PlaycountDto[] | string>> {
+
         const trackObject = await this.trackService.findOneTrackByTrackUri(trackUri);
         const dateBeginning = new Date(date.start)
         const dateEnd = new Date(new Date(date.end).getTime() + 86399999)
@@ -110,7 +110,7 @@ export class PlaycountService {
         if (trackObject) {
             this.logger.verbose(`Searching playcount in the DB for the following track '${trackUri}' between ${date.start} and ${date.end}`)
             const playcountsData = await this.playcountRepository.findBy({
-                track: trackObject, 
+                track: trackObject,
                 date: Between(dateBeginning.getTime(), dateEnd.getTime())
             })
             return {
@@ -122,9 +122,9 @@ export class PlaycountService {
                 }))
             }
         }
-        
+
         this.logger.error(`The following track '${trackUri}' wasn't found in the DB`)
-        
+
         return {
             status: 'failed',
             data: 'Invalid query parameters or track is not yet registered in our database.'
@@ -165,6 +165,6 @@ export class PlaycountService {
     }
 
     async addFakeData() {
-     
+
     }
 }

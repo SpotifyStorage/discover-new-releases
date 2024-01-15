@@ -12,7 +12,7 @@ export interface ArtistAlbumsResponse {
                     }[]
                 }
             }
-        };        
+        };
     };
     extensions: any
 }

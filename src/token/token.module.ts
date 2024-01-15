@@ -4,9 +4,9 @@ import { HttpModule } from '@nestjs/axios';
 import { TokenController } from './token.controller';
 
 @Module({
-  imports: [HttpModule],
-  providers: [TokenService],
-  exports: [TokenService],
-  controllers: [TokenController]
+    imports: [HttpModule],
+    providers: [TokenService],
+    exports: [TokenService],
+    controllers: [TokenController]
 })
-export class TokenModule {}
+export class TokenModule { }

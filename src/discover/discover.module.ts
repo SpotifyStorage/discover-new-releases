@@ -9,16 +9,16 @@ import { AlbumModule } from 'src/album/album.module';
 import { SpotifyApiModule } from 'src/spotify-api/spotify-api.module';
 
 @Module({
-  imports: [
-    ArtistModule,
-    AlbumModule,
-    ArtistQueueModule,
-    ArtistStatQueueModule,
-    SpotifyPartnerModule,
-    SpotifyApiModule,
-  ],
-  providers: [DiscoverService],
-  controllers: [DiscoverController],
-  exports: [DiscoverService]
+    imports: [
+        ArtistModule,
+        AlbumModule,
+        ArtistQueueModule,
+        ArtistStatQueueModule,
+        SpotifyPartnerModule,
+        SpotifyApiModule,
+    ],
+    providers: [DiscoverService],
+    controllers: [DiscoverController],
+    exports: [DiscoverService]
 })
-export class DiscoverModule {}
+export class DiscoverModule { }

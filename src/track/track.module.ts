@@ -14,4 +14,4 @@ import { HttpModule } from '@nestjs/axios';
     providers: [TrackService],
     exports: [TrackService]
 })
-export class TrackModule {}
+export class TrackModule { }

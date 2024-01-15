@@ -11,4 +11,4 @@ import { TokenModule } from 'src/token/token.module';
     providers: [SpotifyApiService],
     exports: [SpotifyApiService]
 })
-export class SpotifyApiModule {}
+export class SpotifyApiModule { }

@@ -17,19 +17,19 @@ export class AlbumService {
         private tracksRepository: Repository<TrackDataEntity>,
 
         //private readonly artistService: ArtistService
-    ) {}
-    
+    ) { }
+
     logger = new Logger(AlbumService.name)
 
     async findAllAlbumsUri() {
         this.logger.verbose('Searching in the DB for all albums')
-        return this.albumRepository.find({select: {albumUri: true}})
+        return this.albumRepository.find({ select: { albumUri: true } })
     }
 
     findOneAlbumByUri(albumUri: string): Promise<AlbumEntity | null> {
-        return this.albumRepository.findOneBy({albumUri: albumUri})
+        return this.albumRepository.findOneBy({ albumUri: albumUri })
     }
-    
+
     async addOneAlbumWithoutTracks(artist: ArtistDataEntity, album: AlbumDto) {
         this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
         const albumEntity = new AlbumEntity()
@@ -53,7 +53,7 @@ export class AlbumService {
     }
     // the following method is good but it cannot be dependent on artistService
     // must use eventEmitter instead : https://www.youtube.com/watch?v=-MlXwb42nKo&ab_channel=MariusEspejo
-    
+
     // async addAlbum(album: Album) {
     //     this.logger.verbose(`Adding the following album '${album.uri}' to DB`)
     //     const artist = await this.artistService.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])
@@ -74,7 +74,7 @@ export class AlbumService {
     //     albumEntity.artist = artist
     //     return this.albumRepository.save(albumEntity)
     // }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // async addOneAlbumByAlbumUri(albumUri: string) {
     //     this.logger.verbose(`Adding the following album '${albumUri}' to DB`)
     //     //const artist = await this.artistService.findOneArtistByArtistUri(album.artists[0].uri.split(":")[2])

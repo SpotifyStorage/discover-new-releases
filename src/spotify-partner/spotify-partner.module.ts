@@ -4,11 +4,11 @@ import { HttpModule } from '@nestjs/axios';
 import { TokenModule } from 'src/token/token.module';
 
 @Module({
-  imports: [
-    HttpModule,
-    TokenModule
-  ],
-  providers: [SpotifyPartnerService],
-  exports: [SpotifyPartnerService]
+    imports: [
+        HttpModule,
+        TokenModule
+    ],
+    providers: [SpotifyPartnerService],
+    exports: [SpotifyPartnerService]
 })
-export class SpotifyPartnerModule {}
+export class SpotifyPartnerModule { }

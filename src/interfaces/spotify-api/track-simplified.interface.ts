@@ -7,22 +7,22 @@ export interface TrackSimplified {
     duration_ms: number;
     explicit: boolean;
     external_urls: {
-      spotify: string;
+        spotify: string;
     };
     href: string;
     id: string;
     is_playable: boolean;
     linked_from?: {
-      external_urls: {
-        spotify: string;
-      };
-      href: string;
-      id: string;
-      type: string;
-      uri: string;
+        external_urls: {
+            spotify: string;
+        };
+        href: string;
+        id: string;
+        type: string;
+        uri: string;
     };
     restrictions: {
-      reason: string;
+        reason: string;
     };
     name: string;
     preview_url: string;
@@ -30,4 +30,4 @@ export interface TrackSimplified {
     type: string;
     uri: string;
     is_local: boolean;
-  }
+}

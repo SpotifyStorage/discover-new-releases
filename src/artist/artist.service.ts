@@ -22,11 +22,11 @@ export class ArtistService {
 
         //@InjectRepository(TrackDataEntity)
         //private trackRepository: Repository<TrackDataEntity>,
-        
+
         private dataSource: DataSource,
         private readonly spotifyApiService: SpotifyApiService,
         private readonly spotifyPartnerService: SpotifyPartnerService
-    ) {}
+    ) { }
     logger = new Logger(ArtistService.name);
 
     async findOneArtistByArtistUri(artistUri: string): Promise<ArtistDataEntity | null> {
@@ -42,7 +42,7 @@ export class ArtistService {
             }
         })
         if (existingArtists.length > 0) {
-            uniqueArtist = artists.filter(artist => 
+            uniqueArtist = artists.filter(artist =>
                 (existingArtists.find(existingArtist => existingArtist.artistUri == artist.id)) == null
             )
         }
@@ -95,7 +95,7 @@ export class ArtistService {
         for (var album of artistData.albums) {
             album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
         }
-        
+
         artistEntity.artistUri = artistData.uri
         artistEntity.name = artistData.name
         artistEntity.albums = await Promise.all(artistData.albums.map(async (album) => {
@@ -108,7 +108,7 @@ export class ArtistService {
                 const trackEntity = new TrackDataEntity()
                 trackEntity.name = track.name
                 trackEntity.trackUri = track.uri
-                
+
                 return trackEntity
             })
             try {
@@ -136,7 +136,7 @@ export class ArtistService {
 
     async findAllArtistsUri(): Promise<ArtistsUriDto[]> {
         this.logger.verbose("Getting all artists' uri in the database")
-        const artistsUri = await this.artistDataRepository.find({select: {artistUri: true}})
+        const artistsUri = await this.artistDataRepository.find({ select: { artistUri: true } })
         return artistsUri.map(artist => ({
             uri: artist.artistUri
         }))
@@ -144,17 +144,17 @@ export class ArtistService {
 
     async findAllArtistsUriAndAlbumCount(): Promise<MinimalArtist[]> {
         this.logger.verbose("Getting all artists' uri and album count in the database")
-        
+
         const artistsUri = await this.artistDataRepository.find({
-            select: {artistUri: true, albums: true}, 
-            relations: {albums: true},
+            select: { artistUri: true, albums: true },
+            relations: { albums: true },
         })
-        
+
         return artistsUri.map(artist => {
             let singleCount = 0, albumCount = 0
-            artist.albums.forEach( (album) => {
-                if (album.type == 'SINGLE') {singleCount++}
-                else if (album.type == 'ALBUM') {albumCount++}
+            artist.albums.forEach((album) => {
+                if (album.type == 'SINGLE') { singleCount++ }
+                else if (album.type == 'ALBUM') { albumCount++ }
             })
             return {
                 artistUri: artist.artistUri,
@@ -166,7 +166,7 @@ export class ArtistService {
     }
 
     async test(x: any) {
-        return {uri: x}
+        return { uri: x }
     }
 
     async addManyArtistsByUri(listOfArtists: ArtistsUriDto[]): Promise<ArtistDataEntity[]> {
@@ -184,7 +184,7 @@ export class ArtistService {
             .createQueryBuilder()
             .delete()
             .from(ArtistDataEntity)
-            .where("artist_uri = :uri", {uri: artistUri})
+            .where("artist_uri = :uri", { uri: artistUri })
             .execute()
         return this.artistDataRepository.find()
 
@@ -192,7 +192,7 @@ export class ArtistService {
 
     async searchArtists(artistName: string): Promise<ArtistDataEntity[]> {
         return await this.artistDataRepository.find({
-            where: {name: Like(`%${artistName.split('').join('%')}%`)},
+            where: { name: Like(`%${artistName.split('').join('%')}%`) },
             take: 10
             //select: {name: true}
         })

@@ -12,7 +12,6 @@ import { SpotifyPartnerModule } from './spotify-partner/spotify-partner.module';
 import typeorm from './config/typeorm';
 import { DiscoverModule } from './discover/discover.module';
 import { DiscoverService } from './discover/discover.service';
-import { ArtistQueueModule } from './queues/artist-queue.module';
 
 @Module({
     imports: [

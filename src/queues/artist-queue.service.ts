@@ -14,7 +14,7 @@ export class ArtistQueueService implements OnModuleInit {
     sbClient: ServiceBusClient;
     sender: ServiceBusSender;
     mainReceiver: ServiceBusReceiver;
-    
+
     onModuleInit() {
         this.sbClient = new ServiceBusClient(this.fullyQualifiedNamespace, this.credential);
         this.sender = this.sbClient.createSender(this.queueName);

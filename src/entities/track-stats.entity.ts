@@ -10,9 +10,9 @@ export class TrackStatsEntity {
         cascade: true,
         onDelete: 'CASCADE'
     })
-    @JoinColumn({name: "track_uri"})
+    @JoinColumn({ name: "track_uri" })
     track: TrackDataEntity;
-    
+
     @Column({ type: 'bigint' })
     playcount: number;
 

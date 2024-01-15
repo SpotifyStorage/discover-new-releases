@@ -9,19 +9,19 @@ export class ArtistStatsEntity {
     @ManyToOne(() => ArtistDataEntity, (artist) => artist.artistUri, {
         onDelete: 'CASCADE'
     })
-    @JoinColumn({name: "artist_uri"})
+    @JoinColumn({ name: "artist_uri" })
     artist: ArtistDataEntity;
-    
+
     @Column()
     popularity: number;
 
     @Column()
     follower: number;
 
-    @Column({name: "monthly_listener"})
+    @Column({ name: "monthly_listener" })
     monthlyListener: number;
 
-    @Column({name: "world_rank"})
+    @Column({ name: "world_rank" })
     worldRank: number;
 
     @Column({ type: 'bigint' })

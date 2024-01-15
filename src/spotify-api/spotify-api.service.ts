@@ -77,13 +77,13 @@ export class SpotifyApiService {
             this.httpService
                 .get<SpotifyResponse<AlbumSimplified>>(url, { headers: header })
                 .pipe(
-                    map( (axiosResponse) => {
+                    map((axiosResponse) => {
                         return axiosResponse.data.items.map((track) => ({
                             uri: track.id,
                             name: track.name
                         }))
                     }),
-                    catchError( (err) => {
+                    catchError((err) => {
                         this.logger.error(`An error occured while fetching spotify-api at ${url}`)
                         this.logger.error(err.response.data)
                         console.log(header, url)

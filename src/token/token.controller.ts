@@ -7,7 +7,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class TokenController {
     constructor(
         private readonly tokenService: TokenService
-    ) {}
+    ) { }
 
     //--//  for debugging purpose only  //--//
     //--// should be deleted when final //--//

@@ -10,15 +10,15 @@ import { SpotifyApiModule } from 'src/spotify-api/spotify-api.module';
 import { TrackModule } from 'src/track/track.module';
 
 @Module({
-  imports: [
-    HttpModule,
-    //ArtistModule,
-    TrackModule,
-    SpotifyApiModule,
-    TypeOrmModule.forFeature([TrackDataEntity, AlbumEntity])
-  ],
-  providers: [AlbumService],
-  controllers: [AlbumController],
-  exports: [AlbumService]
+    imports: [
+        HttpModule,
+        //ArtistModule,
+        TrackModule,
+        SpotifyApiModule,
+        TypeOrmModule.forFeature([TrackDataEntity, AlbumEntity])
+    ],
+    providers: [AlbumService],
+    controllers: [AlbumController],
+    exports: [AlbumService]
 })
-export class AlbumModule {}
+export class AlbumModule { }
