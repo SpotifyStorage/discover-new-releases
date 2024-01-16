@@ -24,7 +24,8 @@ export class ArtistController {
     @ApiQuery({ name: 'testQuery' })
     testing(@Query('testQuery') testQuery: string) {
         console.log(testQuery)
-        return this.spotifyPartnerService.getArtistDataDto(testQuery)
+        //return this.albumService
+        //return this.spotifyPartnerService.getArtistDataDto(testQuery)
     }
 
     @Get('search')
@@ -62,7 +63,7 @@ export class ArtistController {
         const artist = await this.artistService.findOneArtistByArtistUri(artistId)
         const albumDto = await this.spotifyPartnerService.getOneAlbumDtoFromAlbumUri(albumId)
         albumDto.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(albumId)
-        return this.albumService.addOneAlbumWithoutTracks(artist, albumDto)
+        return this.albumService.addOneAlbumWithKnownArtist(artist, albumDto)
     }
 
     @Post('playlist')

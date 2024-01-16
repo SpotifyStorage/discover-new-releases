@@ -21,6 +21,12 @@ export class AlbumController {
         return this.albumService.findAllAlbumsUri()
     }
 
+    @Get('artists')
+    @ApiQuery({ name: 'albumId' })
+    findArtistsOnAlbum(@Query('albumId') albumId: string): Promise<AlbumEntity> {
+        return this.albumService.findArtistsOnAlbumByAlbumUri(albumId)
+    }
+
 
 
     // @ApiQuery({ name: 'artist'})

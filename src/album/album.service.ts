@@ -26,32 +26,51 @@ export class AlbumService {
         return this.albumRepository.find({ select: { albumUri: true } })
     }
 
+    findArtistsOnAlbumByAlbumEntity(album: AlbumEntity): Promise<AlbumEntity> {
+        this.logger.verbose(`Searching in the DB for the following album '${album.albumUri}'`)
+        return this.albumRepository.findOne({
+            where: {
+                albumUri: album.albumUri
+            },
+            relations: {
+                artists: true
+            }
+        })
+    }
+
+    async findArtistsOnAlbumByAlbumUri(albumUri: string): Promise<AlbumEntity> {
+        const albumEntity = await this.findOneAlbumByUri(albumUri)
+        return this.findArtistsOnAlbumByAlbumEntity(albumEntity)
+    }
+
     findOneAlbumByUri(albumUri: string): Promise<AlbumEntity | null> {
         return this.albumRepository.findOneBy({ albumUri: albumUri })
     }
 
-    async addOneAlbumWithoutTracks(artist: ArtistDataEntity, album: AlbumDto) {
+    async addOneAlbumWithKnownArtist(artist: ArtistDataEntity, album: AlbumDto) {
         console.log(album)
-        this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
-        const albumEntity = new AlbumEntity()
-        albumEntity.albumUri = album.uri
-        albumEntity.name = album.name
-        albumEntity.artists = [artist]
-        //albumEntity.artists.push(artist)
-        //albumEntity.name = artist.name
-        albumEntity.type = album.type
-        albumEntity.tracks = album.tracks.map((track) => {
-            const trackEntity = new TrackDataEntity()
-            trackEntity.name = track.name
-            trackEntity.trackUri = track.uri
-            return trackEntity
-        })
-        await this.albumRepository.save(albumEntity)
-        return albumEntity
-
-        this.logger.verbose(`Adding the following album '${album.uri}' to DB`)
-        return
-
+        const currentAlbum = await this.findOneAlbumByUri(album.uri)
+        if (currentAlbum) {
+            this.logger.verbose(`Updating the following album '${album.uri}' with its new artist '${artist.artistUri}'`)
+            
+            currentAlbum.artists.push(artist)
+            return currentAlbum
+        } else {
+            this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
+            const albumEntity = new AlbumEntity()
+            albumEntity.albumUri = album.uri
+            albumEntity.name = album.name
+            albumEntity.artists = [artist]
+            albumEntity.type = album.type
+            albumEntity.tracks = album.tracks.map((track) => {
+                const trackEntity = new TrackDataEntity()
+                trackEntity.name = track.name
+                trackEntity.trackUri = track.uri
+                return trackEntity
+            })
+            await this.albumRepository.save(albumEntity)
+            return albumEntity
+        }
     }
     // the following method is good but it cannot be dependent on artistService
     // must use eventEmitter instead : https://www.youtube.com/watch?v=-MlXwb42nKo&ab_channel=MariusEspejo

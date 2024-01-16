@@ -92,7 +92,7 @@ export class DiscoverService {
                         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
                         album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
                         console.log(album)
-                        await this.albumService.addOneAlbumWithoutTracks(artist, album)
+                        await this.albumService.addOneAlbumWithKnownArtist(artist, album)
                         numOfAlbumsToAdd--
                     }
                 })
@@ -107,7 +107,7 @@ export class DiscoverService {
                         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
                         single.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(single.uri)
                         console.log(single)
-                        await this.albumService.addOneAlbumWithoutTracks(artist, single)
+                        await this.albumService.addOneAlbumWithKnownArtist(artist, single)
                         numOfAlbumsToAdd--
                     }
                 })
