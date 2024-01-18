@@ -44,16 +44,39 @@ export class AlbumService {
     }
 
     findOneAlbumByUri(albumUri: string): Promise<AlbumEntity | null> {
-        return this.albumRepository.findOneBy({ albumUri: albumUri })
+        return this.albumRepository.findOne({
+            where: {
+                albumUri: albumUri
+            },
+            relations: {
+                artists: true
+            }
+        })
     }
 
     async addOneAlbumWithKnownArtist(artist: ArtistDataEntity, album: AlbumDto) {
-        console.log(album)
+        //console.log(album)
         const currentAlbum = await this.findOneAlbumByUri(album.uri)
         if (currentAlbum) {
             this.logger.verbose(`Updating the following album '${album.uri}' with its new artist '${artist.artistUri}'`)
+            const artistsList = await this.findArtistsOnAlbumByAlbumUri(album.uri)
+            const albumEntity = new AlbumEntity()
+            albumEntity.albumUri = album.uri
+            albumEntity.name = album.name
+            albumEntity.artists = []
+            artistsList.artists.forEach((currentArtist) => {
+                albumEntity.artists.push(currentArtist)
+            })
+            albumEntity.artists.push(artist)
+            albumEntity.type = album.type
+            albumEntity.tracks = album.tracks.map((track) => {
+                const trackEntity = new TrackDataEntity()
+                trackEntity.name = track.name
+                trackEntity.trackUri = track.uri
+                return trackEntity
+            })
             
-            currentAlbum.artists.push(artist)
+            await this.albumRepository.save(albumEntity)
             return currentAlbum
         } else {
             this.logger.verbose(`Adding the following album '${album.uri}' with its ${album.tracks.length} tracks to DB`)
