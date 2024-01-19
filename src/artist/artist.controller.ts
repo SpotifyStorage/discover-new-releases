@@ -100,7 +100,7 @@ export class ArtistController {
     async addOneArtistByUri(@Query('artistId') artistUri): Promise<ResponseDto<ArtistDataEntity>> {
         return {
             status: 'success',
-            data: await this.artistService.addOneArtist(artistUri)
+            data: await this.artistService.addOneArtistByArtistUri(artistUri)
         }
     }
 

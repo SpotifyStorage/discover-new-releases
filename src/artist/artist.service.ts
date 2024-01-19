@@ -86,7 +86,7 @@ export class ArtistService {
         })
     }
 
-    async addOneArtist(artistUri: string): Promise<ArtistDataEntity> {
+    async addOneArtistByArtistUri(artistUri: string): Promise<ArtistDataEntity> {
 
         const artistData = await this.spotifyPartnerService.getArtistDataDto(artistUri)
 
@@ -172,7 +172,7 @@ export class ArtistService {
     async addManyArtistsByUri(listOfArtists: ArtistsUriDto[]): Promise<ArtistDataEntity[]> {
         let toReturn = []
         for (var artist of listOfArtists) {
-            toReturn.push(await this.addOneArtist(artist.uri))
+            toReturn.push(await this.addOneArtistByArtistUri(artist.uri))
         }
         return toReturn
     }

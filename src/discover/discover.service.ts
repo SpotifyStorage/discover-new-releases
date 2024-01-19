@@ -78,7 +78,6 @@ export class DiscoverService {
         })
     }
 
-
     async checkForMissingAlbums(artist: MinimalArtist, artistStat: ArtistStatPreQueue) {
         let numOfAlbumsToAdd = artistStat.albumCount - artist.totalCount
 
@@ -89,37 +88,16 @@ export class DiscoverService {
                 this.logger.warn(`Can add an album from the data of the following artist '${artist.artistUri}'`)
                 numOfAlbumsToAdd = await this.addAlbumFromArtistOverview(artistStat.discography.albums.items,
                                                                          artistStat, numOfAlbumsToAdd)
-                // artistStat.discography.albums.items.forEach(async (album) => {
-                //     if (! await this.albumService.findOneAlbumByUri(album.uri)) {
-                //         this.logger.warn(`Adding or updating the following album '${album.uri}'`)
-                //         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
-                //         album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
-                //         console.log(album)
-                //         await this.albumService.addOneAlbumWithKnownArtist(artist, album)
-                //         numOfAlbumsToAdd--
-                //     }
-                // })
             }
             if (artistStat.discography.singles.totalCount <= 10 && artistStat.discography.singles.totalCount > artist.singleCount) {
                 this.logger.warn(`Can add a single from the data of the following artist '${artist.artistUri}'`)
                 console.log(artist)
                 numOfAlbumsToAdd = await this.addAlbumFromArtistOverview(artistStat.discography.singles.items,
                                                                          artistStat, numOfAlbumsToAdd)
-                // artistStat.discography.singles.items.forEach(async (single) => {
-                //     const currentDbAlbum = await this.albumService.findOneAlbumByUri(single.uri)
-                //     if (!currentDbAlbum) {
-                //         this.logger.warn(`Adding or updating the following album '${single.uri}'`)
-                //         const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
-                //         single.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(single.uri)
-                //         console.log(single)
-                //         await this.albumService.addOneAlbumWithKnownArtist(artist, single)
-                //         numOfAlbumsToAdd--
-                //     }
-                // })
             }
             if (numOfAlbumsToAdd >= 1) {
-                console.log(numOfAlbumsToAdd)
-                /////////////////////////////////
+                this.logger.verbose('Must call spotify API to retreive album data')
+                this.artistService.addOneArtistByArtistUri(artist.artistUri)
             }
         }
     }
@@ -135,20 +113,21 @@ export class DiscoverService {
                 console.log(currentDbAlbum)
                 if (!currentDbAlbum) {
                     this.logger.warn(`Adding the following album '${album.name}' (${album.uri})`)
-                    const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
-                    album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
-                    await this.albumService.addOneAlbumWithKnownArtist(artist, album)
+                    this.addOneAlbumWithArtistAndAlbumsDto(album, artistStat)
                     numOfAlbumsToAdd--
                 } else if (!currentDbAlbum.artists.includes(currentArtist)) {
                     this.logger.warn(`Updating the following album '${album.name}' (${album.uri}) in the DB with new artist`)
-                    const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
-                    album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
-                    await this.albumService.addOneAlbumWithKnownArtist(artist, album)
+                    this.addOneAlbumWithArtistAndAlbumsDto(album, artistStat)
                     numOfAlbumsToAdd--
                 }
             } else break
         }
-        console.log(numOfAlbumsToAdd)
         return numOfAlbumsToAdd
+    }
+
+    async addOneAlbumWithArtistAndAlbumsDto(album: AlbumDto, artistStat: ArtistStatPreQueue) {
+        const artist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
+        album.tracks = await this.spotifyApiService.getTracksDtoFromAlbum(album.uri)
+        await this.albumService.addOneAlbumWithKnownArtist(artist, album)
     }
 }
