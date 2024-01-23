@@ -26,21 +26,16 @@ export class AlbumService {
         return this.albumRepository.find({ select: { albumUri: true } })
     }
 
-    findArtistsOnAlbumByAlbumEntity(album: AlbumEntity): Promise<AlbumEntity> {
-        this.logger.verbose(`Searching in the DB for the following album '${album.albumUri}'`)
+    async findArtistsOnAlbumByAlbumUri(albumUri: string): Promise<AlbumEntity> {
+        this.logger.verbose(`Searching in the DB for the following album '${albumUri}'`)
         return this.albumRepository.findOne({
             where: {
-                albumUri: album.albumUri
+                albumUri: albumUri
             },
             relations: {
                 artists: true
             }
         })
-    }
-
-    async findArtistsOnAlbumByAlbumUri(albumUri: string): Promise<AlbumEntity> {
-        const albumEntity = await this.findOneAlbumByUri(albumUri)
-        return this.findArtistsOnAlbumByAlbumEntity(albumEntity)
     }
 
     findOneAlbumByUri(albumUri: string): Promise<AlbumEntity | null> {
@@ -56,10 +51,14 @@ export class AlbumService {
 
     async addOneAlbumWithKnownArtist(artist: ArtistDataEntity, album: AlbumDto) {
         //console.log(album)
+        console.log('333')
         const currentAlbum = await this.findOneAlbumByUri(album.uri)
+        console.log('444')
         if (currentAlbum) {
             this.logger.verbose(`Updating the following album '${album.uri}' with its new artist '${artist.artistUri}'`)
+            console.log('oki')
             const artistsList = await this.findArtistsOnAlbumByAlbumUri(album.uri)
+            console.log('2222')
             const albumEntity = new AlbumEntity()
             albumEntity.albumUri = album.uri
             albumEntity.name = album.name

@@ -3,5 +3,5 @@ export interface ArtistStat {
     followers: number;
     monthlyListeners: number;
     worldRank: number;
-    date: Date;
+    date: string;
 }

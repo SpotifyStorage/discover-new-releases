@@ -10,6 +10,7 @@ import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
 import { SpotifyApiService } from 'src/spotify-api/spotify-api.service';
 import { AlbumDto } from 'src/spotify-partner/dto/album.dto';
+import { CustomDate } from 'src/date';
 
 @Injectable()
 export class DiscoverService {
@@ -43,7 +44,7 @@ export class DiscoverService {
             followers: overview.data.artistUnion.stats.followers,
             monthlyListeners: overview.data.artistUnion.stats.monthlyListeners,
             worldRank: overview.data.artistUnion.stats.worldRank,
-            date: new Date(),
+            date: new CustomDate().getNormalizedDate(),
             albumCount: currentAlbumCount,
             discography: {
                 singles: {
@@ -70,10 +71,11 @@ export class DiscoverService {
         this.logger.verbose(`Initialisation of a receiver for the artist queue`)
         return this.artistQueueService.addReceiver(async message => {
             this.logger.verbose(`Received a messages from the artist queue containing ${message.body.length} albums`)
+            //Should check if the message is the correct format (i.e. if it's a json message at all => does it uses "" and not '', etc)
             message.body.forEach(async artist => {
                 const artistStat = await this.getArtistDailyStats(artist)
                 await this.checkForMissingAlbums(artist, artistStat)
-                //this.artistStatQueueService.sendMessages([artistStat])
+                this.artistStatQueueService.sendMessages([artistStat])
             })
         })
     }
@@ -106,11 +108,9 @@ export class DiscoverService {
         const currentArtist = await this.artistService.findOneArtistByArtistUri(artistStat.uri)
 
         for (let album of albums) {
-            console.log(album.uri)
             if (numOfAlbumsToAdd > 0) { //Makes sure it stops when they're no longer any album to add
                 const currentDbAlbum = await this.albumService.findOneAlbumByUri(album.uri)
-                this.albumService.findArtistsOnAlbumByAlbumUri(album.uri)
-                console.log(currentDbAlbum)
+                await this.albumService.findArtistsOnAlbumByAlbumUri(album.uri) //pourquoi on fait ça ???
                 if (!currentDbAlbum) {
                     this.logger.warn(`Adding the following album '${album.name}' (${album.uri})`)
                     this.addOneAlbumWithArtistAndAlbumsDto(album, artistStat)
