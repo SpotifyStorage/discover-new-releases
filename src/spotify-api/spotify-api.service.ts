@@ -17,23 +17,36 @@ export class SpotifyApiService {
 
     constructor(
         private readonly httpService: HttpService,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
 
     ) { }
 
     async callAlbumFromArtist(artistURI: string = '5eAWCfyUhZtHHtBdNk56l1') {
         const token = (await this.tokenService.getValidApiToken()).access_token
         const header = { 'Authorization': `Bearer ${token}` };
+        const url = `https://api.spotify.com/v1/artists/${artistURI}/albums`
         this.logger.verbose(`Getting albums from artist ${artistURI}`)
         //const header = {"Authorization" : `Bearer ${tokenStr}`}}
 
         return lastValueFrom(
             this.httpService
-                .get<ApiResponseT4ils>(`https://api.spotify.com/v1/artists/${artistURI}/albums`, { headers: header })
+                .get<ApiResponseT4ils>(url, { headers: header })
                 .pipe(
                     map(
                         axiosResponse => axiosResponse.data
-                    )
+                    ),
+                    catchError(async (err) => {
+                        if (err.response.status == 429) {
+                            this.logger.error("429 code while fetching for album's tracks, waiting 10 seconds...")
+                            await new Promise(f => setTimeout(f, 10000))
+                            this.logger.warn('Trying again...')
+                            return this.callAlbumFromArtist(artistURI)
+                        }
+                        this.logger.error(`An error occured while fetching spotify-api at ${url}`)
+                        this.logger.error(err.response.data)
+                        this.logger.debug(header, url)
+                        throw new HttpException(err.message, err.response.status)
+                    })
                 )
         )
     }
@@ -41,22 +54,35 @@ export class SpotifyApiService {
     async getPlaylistTrackItems(playlistURI: string) {
         const token = (await this.tokenService.getValidApiToken()).access_token
         const header = { 'Authorization': `Bearer ${token}` };
+        const url = `https://api.spotify.com/v1/playlists/${playlistURI}`
         this.logger.verbose(`Getting tracks from playlist ${playlistURI}`)
 
         return lastValueFrom(
             this.httpService
-                .get<Playlist>(`https://api.spotify.com/v1/playlists/${playlistURI}`, { headers: header })
+                .get<Playlist>(url, { headers: header })
                 .pipe(
                     map(
                         axiosResponse => axiosResponse.data
-                    )
+                    ),
+                    catchError(async (err) => {
+                        if (err.response.status == 429) {
+                            this.logger.error("429 code while fetching for album's tracks, waiting 10 seconds...")
+                            await new Promise(f => setTimeout(f, 10000))
+                            this.logger.warn('Trying again...')
+                            return this.getPlaylistTrackItems(playlistURI)
+                        }
+                        this.logger.error(`An error occured while fetching spotify-api at ${url}`)
+                        this.logger.error(err.response.data)
+                        this.logger.debug(header, url)
+                        throw new HttpException(err.message, err.response.status)
+                    })
                 )
         )
     }
 
     async getArtistsFromPlaylistTrackItems(playlistURI: string) {
-        const items = (await this.getPlaylistTrackItems(playlistURI)).tracks.items
-        return items.map(x => x.track.artists).flat()
+        const items = this.getPlaylistTrackItems(playlistURI)
+        return items.tracks.items.map(x => x.track.artists).flat()
 
         // for (var item of items) {
         //   for (var artist in item.track.artists) {
@@ -83,28 +109,46 @@ export class SpotifyApiService {
                             name: track.name
                         }))
                     }),
-                    catchError((err) => {
+                    catchError(async (err) => {
+                        if (err.response.status == 429) {
+                            this.logger.error("429 code while fetching for album's tracks, waiting 10 seconds...")
+                            await new Promise(f => setTimeout(f, 10000))
+                            this.logger.warn('Trying again...')
+                            return this.getTracksDtoFromAlbum(albumURI)
+                        }
                         this.logger.error(`An error occured while fetching spotify-api at ${url}`)
                         this.logger.error(err.response.data)
-                        console.log(header, url)
+                        this.logger.debug(header, url)
                         throw new HttpException(err.message, err.response.status)
                     })
                 )
         )
     }
 
-
     async getAlbumFromAlbumSimplified(albumSimplified: AlbumSimplified) {
         const token = (await this.tokenService.getValidApiToken()).access_token
         const header = { 'Authorization': `Bearer ${token}` };
+        const url = `https://api.spotify.com/v1/albums/${albumSimplified.id}`
         this.logger.verbose(`Getting album from albumSimplified ${albumSimplified.id}`)
 
         return lastValueFrom(
             this.httpService
-                .get<Album>(`https://api.spotify.com/v1/albums/${albumSimplified.id}`, { headers: header })
+                .get<Album>(url, { headers: header })
                 .pipe(
                     map((axiosResponse) => {
                         return axiosResponse.data
+                    }),
+                    catchError(async (err) => {
+                        if (err.response.status == 429) {
+                            this.logger.error("429 code while fetching for album's tracks, waiting 10 seconds...")
+                            await new Promise(f => setTimeout(f, 10000))
+                            this.logger.warn('Trying again...')
+                            return this.getAlbumFromAlbumSimplified(albumSimplified)
+                        }
+                        this.logger.error(`An error occured while fetching spotify-api at ${url}`)
+                        this.logger.error(err.response.data)
+                        this.logger.debug(header, url)
+                        throw new HttpException(err.message, err.response.status)
                     })
                 )
         )
@@ -114,16 +158,29 @@ export class SpotifyApiService {
         // ATTENTION: ne regarde que les 20 derniers albums!
         const token = (await this.tokenService.getValidApiToken()).access_token
         const header = { 'Authorization': `Bearer ${token}` };
+        const url = `https://api.spotify.com/v1/artists/${artistUri}/albums`
         this.logger.verbose(`Getting albums from artist ${artistUri}`)
 
         return lastValueFrom(
             this.httpService
                 .get<{
                     items: AlbumSimplified[] //Ajouter AlbumSimplified
-                }>(`https://api.spotify.com/v1/artists/${artistUri}/albums`, { headers: header })
+                }>(url, { headers: header })
                 .pipe(
                     map((axiosResponse) => {
                         return axiosResponse.data.items.map(async albumSimplified => this.getAlbumFromAlbumSimplified(albumSimplified)) //Can be optimized to reduce Spotify API Calls
+                    }),
+                    catchError(async (err) => {
+                        if (err.response.status == 429) {
+                            this.logger.error("429 code while fetching for album's tracks, waiting 10 seconds...")
+                            await new Promise(f => setTimeout(f, 10000))
+                            this.logger.warn('Trying again...')
+                            return this.getAlbumsFromArtist(artistUri)
+                        }
+                        this.logger.error(`An error occured while fetching spotify-api at ${url}`)
+                        this.logger.error(err.response.data)
+                        this.logger.debug(header, url)
+                        throw new HttpException(err.message, err.response.status)
                     })
                 )
         )
